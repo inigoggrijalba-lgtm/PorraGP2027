@@ -271,12 +271,12 @@ export function thumb(url, width) {
 export function Photo({ rider, size = 's', children }) {
   const dims = { s: [50, 55], m: [58, 64], xm: [80, 88], l: [100, 110] }[size];
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const src = failed ? null : thumb(rider.photo_url, size === 'l' || size === 'xm' ? 400 : 240);
   return (
     <span className={`photo ${size}`} style={{ background: rider.team_color || '#2B2B2F', color: rider.text_color || '#F5F4F2' }}>
-      {src ? (
-        <img src={src} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} />
-      ) : (
+      {src ? <img src={src} alt="" decoding="async" style={loaded ? undefined : { opacity: 0 }} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} /> : null}
+      {src && loaded ? null : (
         <svg width={dims[0]} height={dims[1]} viewBox="0 0 64 70" fill="currentColor" fillOpacity="0.38" aria-hidden="true">
           <circle cx="32" cy="24" r="13" />
           <path d="M6 70c0-15 11-25 26-25s26 10 26 25z" />
