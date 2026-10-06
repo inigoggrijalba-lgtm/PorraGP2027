@@ -6,7 +6,8 @@ llamar a funciones de `public`; cada una comprueba el identificador del móvil
 política, así que no hay acceso directo.
 
 Las migraciones aplicadas están en el historial del propio proyecto de Supabase:
-`001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`.
+`001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
+`004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`.
 
 ## Tablas (`porra.*`)
 
@@ -48,9 +49,30 @@ Respuestas de error: `VOTO_CERRADO`, `PILOTO_AGOTADO`, `CAMBIO_AGOTADO`,
 `AUN_NO_SE_VOTA_ESTE_GP`, `GP_SIN_HORARIO`, `JUGADOR_NO_EN_ESTE_MOVIL`,
 `PILOTO_NO_VALIDO`, `JUGADOR_NO_VALIDO`, `GP_NO_VALIDO`.
 
-## Datos cargados de la hoja de 2026
+## Sincronización con MotoGP
+
+Cada 5 minutos, `pg_cron` llama a la función `sync-motogp`
+(`supabase/functions/sync-motogp/index.ts`). La base de datos decide qué pedir
+(`sync_plan`) y guarda lo que llega (`sync_ingest`):
+
+1. Calendario: los GP de la temporada, con sus fechas.
+2. Sesiones de MotoGP, Moto2 y Moto3, con hora y PDF. El endpoint da la hora local
+   del circuito; se convierte con la zona horaria de cada GP (`events.time_zone`).
+3. Clasificación de cada sesión terminada. Se vuelve a pedir a las 6 y a las 36 horas,
+   por si hay sanciones.
+4. De la Sprint y la carrera de MotoGP salen `rider_points`, y de ahí los puntos de
+   cada jugador (`scores`, `source = 'calc'`).
+
+El cierre del voto es la hora de la Sprint. Si el endpoint aún da un horario fuera
+de las fechas del GP, no se usa: el cierre queda provisional, el sábado a las 00:00
+del circuito, hasta que publique el bueno.
+
+## Datos de partida (temporada 2026)
 
 - 13 jugadores, 22 pilotos y 22 grandes premios.
-- 180 votos de las rondas 1 a 16. El cuarto voto de Anita a Bezzecchi (ronda 12) figura como no votado.
-- Puntos por GP tal como están en la hoja (`source = 'hoja'`).
-- Indonesia (ronda 17) se juega todavía con el formulario; sus votos y puntos se cargarán después de la carrera.
+- 180 votos de las rondas 1 a 16, tomados de la hoja. El cuarto voto de Anita a
+  Bezzecchi (ronda 12) figura como no votado.
+- Los puntos ya no vienen de la hoja: se calculan con los resultados del endpoint.
+  El valor de la hoja se conserva en `scores.sheet_total` solo como referencia.
+- Indonesia (ronda 17) se vota todavía con el formulario; sus votos hay que
+  traerlos una vez, después de la carrera.
