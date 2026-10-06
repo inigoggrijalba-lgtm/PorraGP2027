@@ -259,13 +259,23 @@ export function Plate({ rider, size = '' }) {
   );
 }
 
-// Hueco de la foto sobre el color del equipo. Mientras no haya foto, una silueta.
+// Las fotos de MotoGP son de cuerpo entero, 1920 px de ancho y varios megas. Se piden recortadas
+// (cabeza y torso) y reducidas a través de un servicio de imágenes: unos 16 KB cada una.
+export function thumb(url, width) {
+  if (!url) return null;
+  const clean = url.replace(/^https?:\/\//, '').replace(/\/{2,}/g, '/');
+  return `https://wsrv.nl/?url=${encodeURIComponent(clean)}&cx=460&cy=30&cw=1000&ch=1250&precrop&w=${width}&output=webp&q=80`;
+}
+
+// Hueco de la foto sobre el color del equipo. Si no hay foto o no carga, una silueta.
 export function Photo({ rider, size = 's', children }) {
   const dims = { s: [50, 55], m: [58, 64], xm: [80, 88], l: [100, 110] }[size];
+  const [failed, setFailed] = useState(false);
+  const src = failed ? null : thumb(rider.photo_url, size === 'l' || size === 'xm' ? 400 : 240);
   return (
     <span className={`photo ${size}`} style={{ background: rider.team_color || '#2B2B2F', color: rider.text_color || '#F5F4F2' }}>
-      {rider.photo_url ? (
-        <img src={rider.photo_url} alt="" loading="lazy" />
+      {src ? (
+        <img src={src} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} />
       ) : (
         <svg width={dims[0]} height={dims[1]} viewBox="0 0 64 70" fill="currentColor" fillOpacity="0.38" aria-hidden="true">
           <circle cx="32" cy="24" r="13" />

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { indexOf } from './data.js';
 import { ErrorScreen, Join, Loading, PickPlayers, Setup } from './screens/Gate.jsx';
 import Home from './screens/Home.jsx';
+import Admin from './screens/Admin.jsx';
 import { Install, More, Players, Rules } from './screens/More.jsx';
 import { Calendar, FullSchedule } from './screens/MotoGP.jsx';
 import Porra from './screens/Porra.jsx';
@@ -50,7 +51,7 @@ function Ready() {
     screen = <FullSchedule eventId={b} />;
   } else if (a === 'mas') {
     tab = 'mas';
-    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : <More />;
+    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : <More />;
   } else {
     screen = (
       <>

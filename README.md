@@ -29,7 +29,7 @@ El resultado queda en `dist/`.
 
 Primera configuración, entrada con el código de la porra, jugadores de cada móvil, inicio con cuenta atrás
 y horario, votar y cambiar el voto, clasificación, votos y puntos por GP, calendario, horario completo,
-reglas e instalación.
+reglas, instalación, fotos de los pilotos y panel de administrador.
 
-Pendiente: panel de administrador, estadísticas, resultados de MotoGP con PDF oficiales, imágenes para
-compartir, fotos de pilotos, histórico, noticias y avisos.
+Pendiente: estadísticas, resultados de MotoGP con PDF oficiales, imágenes para compartir, histórico,
+noticias y avisos.

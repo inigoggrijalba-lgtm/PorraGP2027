@@ -74,6 +74,29 @@ function row(c: Any) {
   };
 }
 
+// Fotos de los pilotos de MotoGP, una vez al día. Si falla, no afecta al resto de la sincronización.
+async function syncPhotos(secret: string): Promise<Any> {
+  try {
+    const plan = await rpc("sync_riders_plan", { p_secret: secret });
+    if (!plan?.due) return null;
+    // Equipos y pilotos usan otros identificadores de categoría que los resultados.
+    const cats = await api(`/categories?seasonYear=${plan.season}`);
+    const gp = cats.find((c: Any) => String(c.name).replace(/[™®]/g, "").trim() === "MotoGP");
+    if (!gp) return { error: "sin categoría MotoGP" };
+    const teams = await api(`/teams?categoryUuid=${gp.id}&seasonYear=${plan.season}`);
+    const riders = teams.flatMap((t: Any) =>
+      (t.riders ?? []).map((r: Any) => ({
+        rider_uuid: r.id,
+        legacy_id: r.legacy_id ?? null,
+        photo: r.current_career_step?.pictures?.profile?.main ?? null,
+      }))
+    );
+    return await rpc("sync_riders_ingest", { p_secret: secret, p: { riders } });
+  } catch (err) {
+    return { error: String(err) };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   const secret = req.headers.get("x-sync-secret") ?? "";
   if (!secret) return new Response("No autorizado", { status: 401 });
@@ -172,7 +195,7 @@ Deno.serve(async (req: Request) => {
       payload.errors = errors;
       rounds.push(await rpc("sync_ingest", { p_secret: secret, p: payload }));
     }
-    return Response.json({ ok: true, rounds });
+    return Response.json({ ok: true, rounds, photos: await syncPhotos(secret) });
   } catch (err) {
     const message = String(err);
     try {

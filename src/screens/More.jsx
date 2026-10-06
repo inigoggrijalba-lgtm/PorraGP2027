@@ -10,7 +10,7 @@ const ITEMS = [
   ['bell', 'Avisos', 'Recordatorios de voto y resultados', null],
   ['rules', 'Reglas de la porra', 'Cómo se vota y cómo se puntúa', 'mas/reglas'],
   ['install', 'Instalar la app', 'Pasos para Android y iPhone', 'mas/instalar'],
-  ['lock', 'Administrador', 'Entra con contraseña', null],
+  ['lock', 'Administrador', 'Entra con contraseña', 'mas/admin'],
 ];
 
 export function More() {
@@ -43,7 +43,7 @@ export function More() {
                 <Icon name={icon} size={24} stroke={1.9} />
                 <span className="txt">
                   <b>{title}</b>
-                  <small>{sub}</small>
+                  <small>{path === 'mas/admin' && boot.is_admin ? 'Sesión abierta en este móvil' : sub}</small>
                 </span>
                 {path ? (
                   <span className="muted">

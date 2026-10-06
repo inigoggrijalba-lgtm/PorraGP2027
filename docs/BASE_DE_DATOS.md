@@ -7,7 +7,8 @@ política, así que no hay acceso directo.
 
 Las migraciones aplicadas están en el historial del propio proyecto de Supabase:
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
-`004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`.
+`004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
+`006_fotos_pilotos_y_panel_admin`.
 
 ## Tablas (`porra.*`)
 
@@ -35,7 +36,10 @@ Lectura: `get_bootstrap`, `get_event`, `get_session_result`, `get_standings`.
 Voto: `cast_vote(p_token, p_player, p_event, p_rider)`.
 
 Administrador: `admin_set_vote`, `admin_set_points`, `admin_recalc`,
-`admin_set_close`, `admin_save_player`, `admin_log`, `admin_change_secrets`.
+`admin_set_close`, `admin_save_player`, `admin_log`, `admin_change_secrets`,
+`admin_status`, `admin_sync_now` (vuelve a pedir a MotoGP las sesiones de un GP),
+`admin_auto_points` (descarta los puntos metidos a mano), `admin_set_finished`
+y `admin_save_rider` (nombre corto y si se le puede votar).
 
 ## Reglas del voto (dentro de `cast_vote`)
 
@@ -62,6 +66,13 @@ Cada 5 minutos, `pg_cron` llama a la función `sync-motogp`
    por si hay sanciones.
 4. De la Sprint y la carrera de MotoGP salen `rider_points`, y de ahí los puntos de
    cada jugador (`scores`, `source = 'calc'`).
+
+5. Fotos de los pilotos: una vez al día se pide la lista de equipos de MotoGP y se
+   guarda la foto de cada piloto (`riders.photo_url`). La app no carga la foto original
+   (cuerpo entero, varios megas): la pide recortada y reducida a través de `wsrv.nl`.
+
+Los puntos metidos a mano por el administrador (`rider_points.manual`) no los pisa la
+sincronización.
 
 El cierre del voto es la hora de la Sprint. Si el endpoint aún da un horario fuera
 de las fechas del GP, no se usa: el cierre queda provisional, el sábado a las 00:00

@@ -195,6 +195,36 @@ export function setActive(id) {
   set({ active: id });
 }
 
+export async function adminLogin(password) {
+  const r = await call('admin_login', { p_password: password });
+  if (!r.ok) throw new ApiError(r.error);
+  await refresh();
+}
+
+export async function adminLogout() {
+  await call('admin_logout');
+  await refresh();
+}
+
+// Consulta de administrador. Si la sesión ha caducado, se recarga para volver a pedir la contraseña.
+export async function adminRead(name, args = {}) {
+  try {
+    return await call(name, args);
+  } catch (e) {
+    if (e.code === 'NO_ADMIN') await refresh();
+    throw e;
+  }
+}
+
+// Cambio de administrador: después se recargan los datos y, si toca, el GP modificado.
+export async function adminDo(name, args = {}, eventId = null) {
+  const r = await adminRead(name, args);
+  if (r && r.ok === false) throw new ApiError(r.error);
+  await refresh();
+  if (eventId) await loadEvent(eventId);
+  return r;
+}
+
 export async function vote(eventId, riderId) {
   const r = await call('cast_vote', { p_player: state.active, p_event: eventId, p_rider: riderId });
   if (!r.ok) {

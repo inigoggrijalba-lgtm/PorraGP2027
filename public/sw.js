@@ -20,8 +20,9 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
-  const fonts = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
-  if (!sameOrigin && !fonts) return;
+  // Tipografías y fotos de pilotos: se guardan para que no haya que volver a bajarlas.
+  const kept = ['fonts.googleapis.com', 'fonts.gstatic.com', 'wsrv.nl'].includes(url.hostname);
+  if (!sameOrigin && !kept) return;
 
   if (req.mode === 'navigate') {
     event.respondWith(

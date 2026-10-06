@@ -24,6 +24,13 @@ export const dayLong = (v) => `${cap(F_WD_LONG.format(d(v)))} ${F_DAY.format(d(v
 export const dayMid = (v) => `${F_WD_LONG.format(d(v))} ${F_DAY.format(d(v))} ${clean(F_MON_SHORT.format(d(v)))}`;
 export const dayMidCap = (v) => cap(dayMid(v));
 
+// "Hoy 21:26" o "6 oct · 21:26"
+export function whenText(v, nowMs = Date.now()) {
+  const date = d(v);
+  if (dayKey(date) === dayKey(nowMs)) return `Hoy ${hm(date)}`;
+  return `${F_DAY.format(date)} ${clean(F_MON_SHORT.format(date))} · ${hm(date)}`;
+}
+
 // Fechas sin hora del calendario ("2026-10-09"): "9–11 de octubre", "30 oct – 1 nov".
 export function dateRange(start, end) {
   if (!start || !end) return '';

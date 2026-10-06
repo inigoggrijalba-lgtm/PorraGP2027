@@ -51,6 +51,10 @@ const MESSAGES = {
   JUGADOR_NO_VALIDO: 'Ese jugador no está disponible.',
   PILOTO_NO_VALIDO: 'Ese piloto no se puede votar.',
   GP_NO_VALIDO: 'Ese Gran Premio no existe.',
+  CONTRASENA_INCORRECTA: 'Contraseña incorrecta.',
+  NO_ADMIN: 'La sesión de administrador ha caducado. Vuelve a entrar.',
+  NOMBRE_VACIO: 'Escribe un nombre.',
+  NOMBRE_REPETIDO: 'Ya hay un jugador con ese nombre.',
 };
 
 export function messageFor(code) {
