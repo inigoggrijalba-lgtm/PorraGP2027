@@ -233,9 +233,7 @@ function Votes({ event, open }) {
               </div>
               <div style={{ minWidth: 0 }}>
                 <div className={`vcard-rider ${rider.short_name.length > 11 ? 'long' : ''}`}>{rider.short_name}</div>
-                <div className="vcard-sub">
-                  #{rider.number} · {teamShort(rider)}
-                </div>
+                <div className="vcard-sub">{teamShort(rider)}</div>
               </div>
             </div>
             <Photo rider={rider} size="m">

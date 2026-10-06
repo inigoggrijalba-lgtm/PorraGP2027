@@ -445,6 +445,10 @@ svg { flex: none; display: block; }
 @media (prefers-reduced-motion: reduce) {
   .sheet, .pulse { animation: none; }
 }
+@media (max-width: 379px) {
+  .photo.s { width: 52px; }
+  .photo.m { width: 56px; }
+}
 @media (max-width: 359px) {
   .top-row { padding-right: 12px; }
   .who-text .who-label { display: none; }
