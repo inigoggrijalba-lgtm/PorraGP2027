@@ -1,9 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
-import { restoreFont } from './fonts.js';
 import './styles.css';
-
-restoreFont();
 
 createRoot(document.getElementById('root')).render(<App />);
 

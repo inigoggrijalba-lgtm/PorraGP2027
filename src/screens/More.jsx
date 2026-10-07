@@ -1,7 +1,6 @@
 // Pestaña Más: jugadores de este móvil, histórico, noticias, avisos, reglas e instalación.
 import { useEffect, useState } from 'react';
 import { messageFor } from '../api.js';
-import { applyFont, currentFont, FONTS } from '../fonts.js';
 import { setActive, setPlayers } from '../store.js';
 import { Avatar, Icon, Offline, TopBar, useData } from '../ui.jsx';
 
@@ -12,7 +11,6 @@ const ITEMS = [
   ['rules', 'Reglas de la porra', 'Cómo se vota y cómo se puntúa', 'mas/reglas'],
   ['install', 'Instalar la app', 'Pasos para Android y iPhone', 'mas/instalar'],
   ['lock', 'Administrador', 'Entra con contraseña', 'mas/admin'],
-  ['rules', 'Tipografía (prueba)', 'Mira la app con otras letras antes de decidir', 'mas/tipografia'],
 ];
 
 export function More() {
@@ -373,42 +371,6 @@ export function Install() {
               {note}
             </p>
           ) : null}
-        </div>
-      </main>
-    </>
-  );
-}
-
-// Prueba temporal: ver la app con otras tipografías. Solo cambia en este móvil.
-export function Fonts() {
-  const [font, setFont] = useState(currentFont);
-  const pick = (id) => {
-    applyFont(id);
-    setFont(id);
-  };
-  return (
-    <>
-      <TopBar title="Tipografía" back="mas" who={false} />
-      <main className="main has-nav">
-        <div className="page-head" style={{ paddingBottom: 4 }}>
-          <h1 className="h1 s">Elige y pasea por la app</h1>
-          <p className="small muted">Toca una opción y recorre las pantallas. Solo cambia en este móvil; los demás siguen viendo la actual.</p>
-        </div>
-        <div className="fopts" role="radiogroup" aria-label="Tipografía">
-          {FONTS.map((f) => (
-            <button key={f.id} role="radio" aria-checked={font === f.id} className="fopt" data-font={f.id === 'actual' ? undefined : f.id} onClick={() => pick(f.id)}>
-              <span className="fopt-top">
-                <span className="fopt-name">{f.name}</span>
-                {font === f.id ? <span className="tag solid">En uso</span> : null}
-              </span>
-              <span className="fopt-title">GP 17 · Indonesia</span>
-              <span className="fopt-row">
-                <span className="fopt-cond">M. Márquez</span>
-                <span className="fopt-num">1:43.564</span>
-              </span>
-              <span className="fopt-body">{f.detail}</span>
-            </button>
-          ))}
         </div>
       </main>
     </>

@@ -9,10 +9,10 @@ const W = 1080;
 const PAD = 56;
 const C = { bg: '#0A0A0B', line: '#2B2B2F', text: '#F5F4F2', text2: '#B4B3AF', red: '#E10600', redText: '#FF4B3A' };
 // Las imágenes se pintan con las mismas tipografías que esté usando la app en ese momento.
-let DISPLAY = "Orbitron, 'Arial Black', sans-serif";
-let TITLE = DISPLAY;
-let COND = "'Barlow Condensed', 'Arial Narrow', sans-serif";
-let BODY = "Barlow, 'Segoe UI', sans-serif";
+let DISPLAY = "'PG Saira Display', 'Arial Black', sans-serif";
+let TITLE = "'PG Saira Stencil', 'Arial Black', sans-serif";
+let COND = "'PG Saira Cond', 'Arial Narrow', sans-serif";
+let BODY = "'PG Saira Text', 'Segoe UI', sans-serif";
 
 const upper = (s) => String(s || '').toLocaleUpperCase('es');
 const TZ = 'Europe/Madrid';

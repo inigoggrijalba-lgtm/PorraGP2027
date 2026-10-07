@@ -1,53 +1,6 @@
-/* Tipografías de prueba. Todas son libres (licencia SIL OFL, textos junto a estos archivos):
-   Saira, Saira Stencil, Big Shoulders Stencil, Black Ops One, Archivo, Exo 2 y Titillium Web.
-   Solo se descarga la que esté elegida. */
+/* Tipografías de la app, servidas desde aquí mismo. Saira y Saira Stencil son libres
+   (licencia SIL OFL; el texto está en OFL-Saira.txt y OFL-SairaStencil.txt). */
+@font-face { font-family: 'PG Saira Stencil'; src: url('./sairastencil-title.woff') format('woff'); font-weight: 500 900; font-display: swap; size-adjust: 106%; }
 @font-face { font-family: 'PG Saira Display'; src: url('./saira-display.woff') format('woff'); font-weight: 500 900; font-display: swap; size-adjust: 106%; }
 @font-face { font-family: 'PG Saira Cond'; src: url('./saira-cond.woff') format('woff'); font-weight: 400 700; font-display: swap; }
 @font-face { font-family: 'PG Saira Text'; src: url('./saira-text.woff') format('woff'); font-weight: 400 700; font-display: swap; }
-@font-face { font-family: 'PG Archivo Display'; src: url('./archivo-display.woff') format('woff'); font-weight: 500 900; font-display: swap; }
-@font-face { font-family: 'PG Archivo Cond'; src: url('./archivo-cond.woff') format('woff'); font-weight: 400 700; font-display: swap; }
-@font-face { font-family: 'PG Archivo Text'; src: url('./archivo-text.woff') format('woff'); font-weight: 400 700; font-display: swap; }
-@font-face { font-family: 'PG Exo Display'; src: url('./exo2-display.woff') format('woff'); font-weight: 500 900; font-display: swap; size-adjust: 106%; }
-@font-face { font-family: 'PG Titillium'; src: url('./titillium-400.woff') format('woff'); font-weight: 400 500; font-display: swap; }
-@font-face { font-family: 'PG Titillium'; src: url('./titillium-600.woff') format('woff'); font-weight: 600; font-display: swap; }
-@font-face { font-family: 'PG Titillium'; src: url('./titillium-700.woff') format('woff'); font-weight: 700 900; font-display: swap; }
-
-@font-face { font-family: 'PG Saira Stencil'; src: url('./sairastencil-title.woff') format('woff'); font-weight: 500 900; font-display: swap; size-adjust: 106%; }
-@font-face { font-family: 'PG Big Shoulders Stencil'; src: url('./bigshouldersstencil-title.woff') format('woff'); font-weight: 500 900; font-display: swap; size-adjust: 122%; }
-@font-face { font-family: 'PG Black Ops'; src: url('./blackops-title.woff') format('woff'); font-weight: 400 900; font-display: swap; }
-
-html[data-font='saira'] {
-  --display: 'PG Saira Display', 'Arial Black', sans-serif;
-  --cond: 'PG Saira Cond', 'Arial Narrow', sans-serif;
-  --body: 'PG Saira Text', 'Segoe UI', system-ui, sans-serif;
-}
-html[data-font='archivo'] {
-  --display: 'PG Archivo Display', 'Arial Black', sans-serif;
-  --cond: 'PG Archivo Cond', 'Arial Narrow', sans-serif;
-  --body: 'PG Archivo Text', 'Segoe UI', system-ui, sans-serif;
-}
-html[data-font='exo'] {
-  --display: 'PG Exo Display', 'Arial Black', sans-serif;
-  --cond: 'PG Titillium', 'Arial Narrow', sans-serif;
-  --body: 'PG Titillium', 'Segoe UI', system-ui, sans-serif;
-}
-
-/* Titulares con cortes de plantilla; números y resto, en Saira. */
-html[data-font='saira-stencil'], html[data-font='bigshoulders'], html[data-font='blackops'] {
-  --display: 'PG Saira Display', 'Arial Black', sans-serif;
-  --cond: 'PG Saira Cond', 'Arial Narrow', sans-serif;
-  --body: 'PG Saira Text', 'Segoe UI', system-ui, sans-serif;
-}
-html[data-font='saira-stencil'] { --title: 'PG Saira Stencil', 'PG Saira Display', 'Arial Black', sans-serif; }
-html[data-font='bigshoulders'] { --title: 'PG Big Shoulders Stencil', 'PG Saira Display', 'Arial Black', sans-serif; }
-html[data-font='blackops'] { --title: 'PG Black Ops', 'PG Saira Display', 'Arial Black', sans-serif; }
-
-/* Cada tarjeta de la pantalla de prueba se enseña con su propia tipografía. */
-.fopt[data-font='saira'] { --title: 'PG Saira Display', sans-serif; --display: 'PG Saira Display', sans-serif; --cond: 'PG Saira Cond', sans-serif; --body: 'PG Saira Text', sans-serif; }
-.fopt[data-font='archivo'] { --title: 'PG Archivo Display', sans-serif; --display: 'PG Archivo Display', sans-serif; --cond: 'PG Archivo Cond', sans-serif; --body: 'PG Archivo Text', sans-serif; }
-.fopt[data-font='exo'] { --title: 'PG Exo Display', sans-serif; --display: 'PG Exo Display', sans-serif; --cond: 'PG Titillium', sans-serif; --body: 'PG Titillium', sans-serif; }
-.fopt:not([data-font]) { --title: 'Orbitron', 'Arial Black', sans-serif; --display: 'Orbitron', 'Arial Black', sans-serif; --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif; --body: 'Barlow', 'Segoe UI', sans-serif; }
-.fopt[data-font='saira-stencil'], .fopt[data-font='bigshoulders'], .fopt[data-font='blackops'] { --display: 'PG Saira Display', sans-serif; --cond: 'PG Saira Cond', sans-serif; --body: 'PG Saira Text', sans-serif; }
-.fopt[data-font='saira-stencil'] { --title: 'PG Saira Stencil', sans-serif; }
-.fopt[data-font='bigshoulders'] { --title: 'PG Big Shoulders Stencil', sans-serif; }
-.fopt[data-font='blackops'] { --title: 'PG Black Ops', sans-serif; }

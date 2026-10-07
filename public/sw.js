@@ -1,7 +1,7 @@
 // Guarda la app para que abra al instante y sin cobertura. Los datos siempre se piden a la red.
 const VERSION = '%VERSION%';
 const CACHE = `porragp-${VERSION}`;
-const SHELL = ['./', './index.html', '%APP_JS%', '%APP_CSS%', './manifest.webmanifest', './icon.svg', './icon-192.png', './badge-96.png'];
+const SHELL = ['./', './index.html', '%APP_JS%', '%APP_CSS%', './manifest.webmanifest', './icon.svg', './icon-192.png', './badge-96.png', './fonts/fonts.css', './fonts/sairastencil-title.woff', './fonts/saira-display.woff', './fonts/saira-cond.woff', './fonts/saira-text.woff'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -63,8 +63,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
-  // Tipografías y fotos de pilotos: se guardan para que no haya que volver a bajarlas.
-  const kept = ['fonts.googleapis.com', 'fonts.gstatic.com', 'wsrv.nl'].includes(url.hostname);
+  // Fotos de pilotos: se guardan para que no haya que volver a bajarlas.
+  const kept = url.hostname === 'wsrv.nl';
   if (!sameOrigin && !kept) return;
 
   if (req.mode === 'navigate') {
