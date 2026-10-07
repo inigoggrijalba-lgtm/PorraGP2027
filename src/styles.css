@@ -448,6 +448,7 @@ svg { flex: none; display: block; }
 @media (max-width: 379px) {
   .photo.s { width: 52px; }
   .photo.m { width: 56px; }
+  .photo.xl { width: 170px; clip-path: polygon(36px 0, 100% 0, 100% 100%, 0 100%); }
 }
 @media (max-width: 359px) {
   .top-row { padding-right: 12px; }
@@ -545,6 +546,9 @@ svg { flex: none; display: block; }
 .rhero-first { font-family: var(--cond); font-weight: 500; font-size: 26px; line-height: 1; }
 .rhero-last { font-family: var(--cond); font-weight: 700; font-size: var(--fs, 44px); line-height: 1; text-transform: uppercase; overflow-wrap: anywhere; }
 .photo.xl { width: 190px; clip-path: polygon(40px 0, 100% 0, 100% 100%, 0 100%); }
+@media (max-width: 379px) {
+  .photo.xl { width: 170px; clip-path: polygon(36px 0, 100% 0, 100% 100%, 0 100%); }
+}
 .ktiles { padding: 20px 20px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .ktile { min-height: 112px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: var(--panel); border: 1px solid var(--line); }
 .ktile-n { font-family: var(--display); font-weight: 800; font-size: 36px; line-height: 1; }
