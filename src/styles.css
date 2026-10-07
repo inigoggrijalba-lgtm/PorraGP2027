@@ -303,7 +303,8 @@ svg { flex: none; display: block; }
 .dots { height: 20px; display: flex; align-items: center; justify-content: center; gap: 5px; }
 .dots i { width: 3px; height: 3px; border-radius: 50%; background: var(--text3); }
 
-.tabs { padding: 0 20px; display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; border-bottom: 1px solid var(--line); font-family: var(--cond); font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; }
+/* El menú de cada sección va sobre una banda gris, para que se vea que ahí se elige. */
+.tabs { padding: 0 20px; background: var(--panel2); display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; border-bottom: 1px solid var(--line); font-family: var(--cond); font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; }
 .tabs::-webkit-scrollbar { display: none; }
 .tabs a, .tabs span { flex: none; height: 48px; display: flex; align-items: center; gap: 6px; color: var(--text2); }
 .tabs a[aria-current='page'] { color: var(--text); box-shadow: inset 0 -3px 0 var(--red); }
@@ -624,10 +625,11 @@ svg { flex: none; display: block; }
 .hn { font-family: var(--display); font-weight: 800; font-size: 15px; color: var(--red-text); }
 .hdec { margin: 0 -20px; padding: 0 20px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; font-family: var(--cond); font-weight: 600; font-size: 14px; letter-spacing: 0.06em; }
 .hdec::-webkit-scrollbar { display: none; }
-.hdec button { flex: none; height: 44px; padding: 0 12px; border: 1px solid var(--line); color: var(--text2); white-space: nowrap; }
+/* Décadas y medios: fichas con fondo gris, que se distinguen del negro de la pantalla. */
+.hdec button { flex: none; height: 44px; padding: 0 12px; background: var(--panel2); border: 1px solid #3A3A3F; color: var(--text); white-space: nowrap; }
 .hdec button[aria-pressed='true'] { background: var(--text); border-color: var(--text); color: var(--bg); font-weight: 700; }
 .hdec.red { font-size: 15px; }
-.hdec.red button { padding: 0 16px; color: var(--text); }
+.hdec.red button { padding: 0 16px; background: transparent; border-color: var(--line); color: var(--text); }
 .hdec.red button[aria-pressed='true'] { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
 .hgrid { display: grid; gap: 6px; font-family: var(--cond); font-weight: 600; font-size: 15px; letter-spacing: 0.02em; }
 .hgrid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
