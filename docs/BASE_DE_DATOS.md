@@ -158,7 +158,8 @@ reintenta en las siguientes pasadas (`news_plan` dice qué falta). El resultado 
 
 La app pide `get_news`: hasta 30 noticias por medio de las tres últimas semanas. Las
 fotos se enseñan recortadas a través de `images.weserv.nl`, y las noticias en inglés
-pueden abrirse traducidas con el traductor web de Google (interruptor en la pantalla).
+pueden abrirse traducidas con el traductor web de Google (interruptor en la pantalla,
+apagado de fábrica porque algunas redes de empresa bloquean ese traductor).
 
 ## Datos de partida (temporada 2026)
 

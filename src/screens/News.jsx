@@ -10,15 +10,16 @@ const PAGE = 25;
 
 // Las fotos se piden ya recortadas y ligeras a un servicio de imágenes, no al medio.
 const picture = (url, w, h) => `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&h=${h}&fit=cover&a=attention&output=webp&q=75`;
-// Las noticias en otro idioma pueden abrirse ya traducidas con el traductor de Google.
+// Quien lo active abre las noticias en otro idioma ya traducidas con el traductor web de Google.
 const translatedLink = (item) => `https://translate.google.com/translate?sl=${item.lang}&tl=es&u=${encodeURIComponent(item.url)}`;
 
 const KEY = 'porragp.noticias.traducir';
+// Apagado de fábrica: lo normal es abrir la noticia en la web del medio, tal cual.
 function readPref() {
   try {
-    return localStorage.getItem(KEY) !== '0';
+    return localStorage.getItem(KEY) === '1';
   } catch {
-    return true;
+    return false;
   }
 }
 
@@ -157,7 +158,7 @@ export default function News() {
                 <div className="swrow">
                   <span className="swtext">
                     <span>Abrir traducidas las noticias en inglés</span>
-                    <small>Con el traductor de Google. Si alguna no se ve bien, apágalo.</small>
+                    <small>Con el traductor de Google. Algunas redes de empresa lo bloquean.</small>
                   </span>
                   <button className="sw" role="switch" aria-checked={translate} aria-label="Abrir traducidas las noticias en inglés" onClick={togglePref}>
                     <span className={`sw-track ${translate ? 'on' : ''}`}>
