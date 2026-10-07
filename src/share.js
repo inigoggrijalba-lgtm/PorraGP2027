@@ -1,15 +1,17 @@
 // Imágenes para compartir en el grupo: clasificación, parrilla y horario.
 // Se pintan en la propia app, a 1080 px de ancho, con los colores y tipografías de la porra.
 import { bigName, conditionText, fullName, isRace, rowRider, rowTimes, titleName } from './results.js';
+import { families } from './fonts.js';
 import { oldRider } from './history.js';
 import { dateRange, dayKey, hm } from './time.js';
 
 const W = 1080;
 const PAD = 56;
 const C = { bg: '#0A0A0B', line: '#2B2B2F', text: '#F5F4F2', text2: '#B4B3AF', red: '#E10600', redText: '#FF4B3A' };
-const DISPLAY = "Orbitron, 'Arial Black', sans-serif";
-const COND = "'Barlow Condensed', 'Arial Narrow', sans-serif";
-const BODY = "Barlow, 'Segoe UI', sans-serif";
+// Las imágenes se pintan con las mismas tipografías que esté usando la app en ese momento.
+let DISPLAY = "Orbitron, 'Arial Black', sans-serif";
+let COND = "'Barlow Condensed', 'Arial Narrow', sans-serif";
+let BODY = "Barlow, 'Segoe UI', sans-serif";
 
 const upper = (s) => String(s || '').toLocaleUpperCase('es');
 const TZ = 'Europe/Madrid';
@@ -20,8 +22,9 @@ const longDate = (v) => `${weekday(v)} ${dayNum(v)} ${fmt({ month: 'short' }).fo
 
 // Las tipografías tienen que estar cargadas antes de pintar; si no, el lienzo usa otra.
 async function fonts() {
+  ({ display: DISPLAY, cond: COND, body: BODY } = families());
   if (!document.fonts || !document.fonts.load) return;
-  const wanted = ['900 100px Orbitron', '800 40px Orbitron', '700 30px Orbitron', '500 30px Orbitron', '700 40px "Barlow Condensed"', '600 40px "Barlow Condensed"', '500 40px "Barlow Condensed"', '400 28px Barlow'];
+  const wanted = [`900 100px ${DISPLAY}`, `800 40px ${DISPLAY}`, `700 30px ${DISPLAY}`, `500 30px ${DISPLAY}`, `700 40px ${COND}`, `600 40px ${COND}`, `500 40px ${COND}`, `400 28px ${BODY}`];
   await Promise.all(wanted.map((f) => document.fonts.load(f).catch(() => null)));
 }
 

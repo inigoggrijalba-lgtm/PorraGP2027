@@ -15,6 +15,7 @@ App de la porra de MotoGP: voto por Gran Premio, clasificación, horarios y cale
 | `scripts/build.mjs` | Compila todo en `dist/` |
 | `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil; `sync-news` lee las noticias |
 | `vercel.json` | Cómo compila y sirve Vercel la app |
+| `public/fonts/` y `src/fonts.js` | Prueba temporal de tipografías (Más › Tipografía): Saira, Archivo, Exo 2 y Titillium Web, todas con licencia libre SIL OFL. Cuando se elija una, se quita el selector |
 | `redirect/` y `.github/workflows/deploy.yml` | Página que GitHub Pages publica en la dirección antigua para llevar a la nueva |
 
 ## Compilar
