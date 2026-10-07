@@ -168,6 +168,8 @@ export const loadGrid = (eventId, category) => cached(`g|${eventId}|${category}`
 // Pilotos de las tres categorías y ficha de cada uno.
 export const loadRiders = () => cached('riders', () => call('get_gp_riders'));
 export const loadRider = (id) => cached(`rider|${id}`, () => call('get_gp_rider', { p_rider: id }));
+// Titulares de los medios.
+export const loadNews = () => cached('news', () => call('get_news'));
 
 // Histórico. El servidor pide cada dato a MotoGP en segundo plano la primera vez que alguien lo consulta:
 // mientras llega contesta "pending" y aquí se vuelve a preguntar. Lo ya pedido sale al momento.

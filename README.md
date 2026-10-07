@@ -13,7 +13,7 @@ App de la porra de MotoGP: voto por Gran Premio, clasificación, horarios y cale
 | `src/` | La app (React). `screens/` tiene una pantalla por archivo; `store.js` guarda el estado y habla con la base de datos; `share.js` pinta las imágenes para compartir |
 | `public/` | Icono, manifiesto y el guardado sin conexión (`sw.js`) |
 | `scripts/build.mjs` | Compila todo en `dist/` |
-| `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil |
+| `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil; `sync-news` lee las noticias |
 | `.github/workflows/deploy.yml` | Publica en GitHub Pages cada vez que cambia `main` |
 
 ## Compilar
@@ -32,6 +32,5 @@ y horario, votar y cambiar el voto, clasificación, votos y puntos por GP, calen
 reglas, instalación, fotos de los pilotos, panel de administrador, resultados de todas las sesiones
 (MotoGP, Moto2 y Moto3) con sus PDF oficiales, parrilla e imágenes para compartir (clasificación,
 parrilla y horario), pilotos de las tres categorías con su ficha, avisos al móvil, estadísticas de la
-porra (evolución, puntos por GP y pilotos más votados) e histórico de resultados desde 1949.
-
-Pendiente: noticias.
+porra (evolución, puntos por GP y pilotos más votados), histórico de resultados desde 1949 y noticias
+de cinco medios (Motorsport.com, Motosan, Crash.net, GPOne y The Race) con los titulares traducidos.

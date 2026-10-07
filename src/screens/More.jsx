@@ -1,4 +1,4 @@
-// Pestaña Más: jugadores de este móvil, histórico, avisos, reglas e instalación. Las noticias llegan más adelante.
+// Pestaña Más: jugadores de este móvil, histórico, noticias, avisos, reglas e instalación.
 import { useEffect, useState } from 'react';
 import { messageFor } from '../api.js';
 import { setActive, setPlayers } from '../store.js';
@@ -6,7 +6,7 @@ import { Avatar, Icon, Offline, TopBar, useData } from '../ui.jsx';
 
 const ITEMS = [
   ['history', 'Histórico', 'Resultados de todas las temporadas desde 1949', 'mas/historico'],
-  ['news', 'Noticias', 'Medios especializados en MotoGP', null],
+  ['news', 'Noticias', 'Medios especializados en MotoGP', 'mas/noticias'],
   ['bell', 'Avisos', 'Recordatorios de voto y resultados', 'mas/avisos'],
   ['rules', 'Reglas de la porra', 'Cómo se vota y cómo se puntúa', 'mas/reglas'],
   ['install', 'Instalar la app', 'Pasos para Android y iPhone', 'mas/instalar'],

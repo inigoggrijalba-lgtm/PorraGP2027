@@ -654,3 +654,27 @@ svg { flex: none; display: block; }
   .stile b { font-size: 24px; }
   .voted .vn { width: 104px; }
 }
+
+/* Noticias */
+.nchips { font-size: 15px; letter-spacing: 0.04em; }
+.nchips button { padding: 0 14px; color: var(--text); }
+.nhero { margin: 16px 20px 0; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); }
+.nhero-img { height: 190px; display: flex; background: var(--panel2); overflow: hidden; }
+.nhero-img img, .nthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nph { flex: 1; display: flex; align-items: center; justify-content: center; padding: 4px; text-align: center; color: var(--text3); font-family: var(--cond); font-weight: 600; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.nhero-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.nmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12px; color: var(--text2); }
+.ntag { padding: 2px 6px; background: var(--text); color: var(--bg); font-family: var(--cond); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.nhero-title { font-family: var(--cond); font-weight: 600; font-size: 24px; line-height: 1.1; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.nhero-sum { font-size: 14px; color: var(--text2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.nlist { padding: 8px 20px 0; display: flex; flex-direction: column; }
+.nrow { min-height: 112px; padding: 14px 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+.nthumb { flex: none; width: 104px; height: 80px; display: flex; background: var(--panel2); overflow: hidden; }
+.nrow-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.nrow-title { font-family: var(--cond); font-weight: 600; font-size: 19px; line-height: 1.15; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.nhero:active, .nrow:active { opacity: 0.8; }
+@media (max-width: 359px) {
+  .nthumb { width: 88px; height: 68px; }
+  .nhero-img { height: 160px; }
+  .nhero-title { font-size: 22px; }
+}

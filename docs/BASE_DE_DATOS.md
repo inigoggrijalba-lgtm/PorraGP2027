@@ -9,7 +9,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
 `006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`,
-`009_historico`, `010_historico_adelanta_carrera`.
+`009_historico`, `010_historico_adelanta_carrera`, `011_noticias` a `014_noticias_…`.
 
 ## Tablas (`porra.*`)
 
@@ -30,6 +30,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 | `vote_log` | Historial de votos y cambios, incluidos los del administrador |
 | `attempts` | Intentos de código y contraseña, para limitar los fallidos |
 | `api_cache` | Lo ya consultado del histórico de MotoGP (temporadas, grandes premios, sesiones y clasificaciones) |
+| `news` | Titulares de los medios: titular, entradilla corta, imagen, enlace y su traducción |
 
 ## Funciones (`public.*`)
 
@@ -38,7 +39,7 @@ Acceso: `porra_status`, `setup_porra` (solo la primera vez), `join_device`,
 
 Lectura: `get_bootstrap`, `get_event`, `get_session_result` (clasificación de una
 sesión), `get_grid` (parrilla de un GP y categoría), `get_standings`, `get_gp_riders` y
-`get_gp_rider` (pilotos y ficha), `history` (histórico de resultados).
+`get_gp_rider` (pilotos y ficha), `history` (histórico de resultados), `get_news` (noticias).
 
 Avisos: `push_public_key`, `push_subscribe`, `push_state`, `push_unsubscribe`, `push_test`.
 
@@ -130,6 +131,34 @@ enseñando lo anterior. Solo se aceptan identificadores que MotoGP haya dado ant
 así que la caché no puede llenarse con peticiones inventadas. Al pedir las sesiones de
 un GP se adelanta ya la petición de la clasificación de la carrera, que es la que la app
 enseña primero.
+
+## Noticias
+
+Cada 20 minutos `pg_cron` llama a la función `sync-news` (`supabase/functions/sync-news/`),
+que lee el RSS de cada medio:
+
+| Medio | Idioma | Se queda con |
+|---|---|---|
+| Motorsport.com (edición española) | castellano | todo (el RSS ya es de MotoGP) |
+| Motosan | castellano | lo de MotoGP, Moto2 y Moto3 |
+| Crash.net | inglés | lo de MotoGP, Moto2 y Moto3 (el RSS mezcla Superbikes) |
+| GPOne | inglés | lo de MotoGP, Moto2 y Moto3 |
+| The Race | inglés | todo (el RSS ya es de MotoGP) |
+
+De cada noticia se guarda solo el titular, una entradilla de unas 200 letras, la imagen y
+el enlace; el texto se lee en la web del medio. Si el RSS no trae imagen (Motosan, GPOne),
+se toma la portada que declara la propia noticia (`og:image`).
+
+Los titulares en inglés se traducen con un servicio gratuito (MyMemory; antes se intenta
+el de Google, que hoy rechaza las peticiones desde servidores). El cupo gratuito es
+limitado, así que primero van los titulares y después, si queda, la entradilla de la
+noticia más reciente de cada medio. Lo que no se llega a traducir se guarda en inglés y se
+reintenta en las siguientes pasadas (`news_plan` dice qué falta). El resultado de la
+última pasada queda en `config.news_status`.
+
+La app pide `get_news`: hasta 30 noticias por medio de las tres últimas semanas. Las
+fotos se enseñan recortadas a través de `images.weserv.nl`, y las noticias en inglés
+pueden abrirse traducidas con el traductor web de Google (interruptor en la pantalla).
 
 ## Datos de partida (temporada 2026)
 

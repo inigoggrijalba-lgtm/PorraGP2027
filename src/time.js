@@ -54,3 +54,14 @@ export function countdown(ms) {
   if (days >= 1) return [[String(days), days === 1 ? 'DÍA' : 'DÍAS'], [two(hours), 'HORAS'], [two(mins), 'MIN']];
   return [[two(hours), 'HORAS'], [two(mins), 'MIN'], [two(secs), 'SEG']];
 }
+
+// "hace 12 min", "hace 3 h", "ayer" o "5 oct"
+export function ago(v, nowMs = Date.now()) {
+  const date = d(v);
+  const mins = Math.max(0, Math.round((nowMs - date.getTime()) / 60000));
+  if (mins < 1) return 'ahora mismo';
+  if (mins < 60) return `hace ${mins} min`;
+  if (mins < 24 * 60) return `hace ${Math.round(mins / 60)} h`;
+  if (dayKey(date) === dayKey(nowMs - 86400e3)) return 'ayer';
+  return `${F_DAY.format(date)} ${clean(F_MON_SHORT.format(date))}`;
+}
