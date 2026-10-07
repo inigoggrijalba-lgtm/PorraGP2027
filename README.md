@@ -2,7 +2,7 @@
 
 App de la porra de MotoGP: voto por Gran Premio, clasificación, horarios y calendario.
 
-- Web instalable (PWA) publicada con GitHub Pages: https://inigoggrijalba-lgtm.github.io/PorraGP2027/
+- Web instalable (PWA) publicada con Vercel: https://porragp27.vercel.app/ (cada cambio en `main` se publica solo). La dirección antigua de GitHub Pages solo redirige a esta: comparte dirección con la app de 2026 y Chrome en Android no dejaba instalar las dos.
 - Datos y reglas del juego en Supabase (ver `docs/BASE_DE_DATOS.md`).
 - Resultados y horarios cargados automáticamente del endpoint de MotoGP.
 
@@ -14,7 +14,8 @@ App de la porra de MotoGP: voto por Gran Premio, clasificación, horarios y cale
 | `public/` | Icono, manifiesto y el guardado sin conexión (`sw.js`) |
 | `scripts/build.mjs` | Compila todo en `dist/` |
 | `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil; `sync-news` lee las noticias |
-| `.github/workflows/deploy.yml` | Publica en GitHub Pages cada vez que cambia `main` |
+| `vercel.json` | Cómo compila y sirve Vercel la app |
+| `redirect/` y `.github/workflows/deploy.yml` | Página que GitHub Pages publica en la dirección antigua para llevar a la nueva |
 
 ## Compilar
 

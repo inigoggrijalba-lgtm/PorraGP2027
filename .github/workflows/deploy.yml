@@ -1,4 +1,4 @@
-name: Publicar en GitHub Pages
+name: Redirección desde GitHub Pages
 
 on:
   push:
@@ -18,15 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # La app se publica en Vercel (https://porragp27.vercel.app). Aquí solo queda una página
+      # que lleva a la dirección nueva a quien entre por la antigua.
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm install --no-audit --no-fund
-      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: redirect
   deploy:
     needs: build
     runs-on: ubuntu-latest
