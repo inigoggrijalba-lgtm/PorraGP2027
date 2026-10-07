@@ -66,6 +66,27 @@ export default function Notices() {
     });
   };
 
+  // Aviso de prueba: se envía y se espera a que este mismo móvil confirme que lo ha recibido.
+  const sendTest = () =>
+    run(async () => {
+      const arrived = new Promise((resolve) => {
+        const onMessage = (event) => {
+          if (event.data && event.data.type === 'push-received' && event.data.tag === 'prueba') finish(true);
+        };
+        const timer = setTimeout(() => finish(false), 20000);
+        function finish(ok) {
+          clearTimeout(timer);
+          navigator.serviceWorker.removeEventListener('message', onMessage);
+          resolve(ok);
+        }
+        navigator.serviceWorker.addEventListener('message', onMessage);
+      });
+      setNote({ text: 'Enviando el aviso de prueba…' });
+      await testPush(status.endpoint);
+      const ok = await arrived;
+      setNote(ok ? { text: 'Aviso recibido en este móvil. Todo en orden.' } : { text: 'El aviso ha salido pero aún no ha llegado. Comprueba que el móvil tiene conexión y que las notificaciones del navegador no están silenciadas.', bad: true });
+    });
+
   const state = status && status.state;
   return (
     <>
@@ -111,7 +132,7 @@ export default function Notices() {
                 Los avisos llegan a este móvil. Si aquí votan varios jugadores, el aviso dice quién falta. De madrugada no se manda nada: si el cierre es muy temprano, el último aviso llega la víspera a las 21:30.
               </p>
               <div className="stack" style={{ marginTop: 14 }}>
-                <button className="btn wide" disabled={busy} onClick={() => run(() => testPush(status.endpoint), 'Aviso de prueba enviado. Debería llegar en unos segundos.')}>
+                <button className="btn wide" disabled={busy} onClick={sendTest}>
                   <Icon name="bell" />
                   <span>Enviar aviso de prueba</span>
                 </button>

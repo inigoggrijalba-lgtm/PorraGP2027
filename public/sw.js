@@ -24,14 +24,20 @@ self.addEventListener('push', (event) => {
     data = { body: event.data ? event.data.text() : '' };
   }
   event.waitUntil(
-    self.registration.showNotification(data.title || 'PorraGP', {
-      body: data.body || '',
-      tag: data.tag || undefined,
-      renotify: !!data.tag,
-      icon: './icon-192.png',
-      badge: './badge-96.png',
-      data: { url: data.url || '' },
-    }),
+    Promise.all([
+      self.registration.showNotification(data.title || 'PorraGP', {
+        body: data.body || '',
+        tag: data.tag || undefined,
+        renotify: !!data.tag,
+        icon: './icon-192.png',
+        badge: './badge-96.png',
+        data: { url: data.url || '' },
+      }),
+      // Si la app está abierta, se le dice que el aviso ha llegado (sirve para confirmar la prueba).
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+        for (const c of list) c.postMessage({ type: 'push-received', tag: data.tag || '' });
+      }),
+    ]),
   );
 });
 
