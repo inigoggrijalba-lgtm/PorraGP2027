@@ -169,6 +169,34 @@ export const loadGrid = (eventId, category) => cached(`g|${eventId}|${category}`
 export const loadRiders = () => cached('riders', () => call('get_gp_riders'));
 export const loadRider = (id) => cached(`rider|${id}`, () => call('get_gp_rider', { p_rider: id }));
 
+// Histórico. El servidor pide cada dato a MotoGP en segundo plano la primera vez que alguien lo consulta:
+// mientras llega contesta "pending" y aquí se vuelve a preguntar. Lo ya pedido sale al momento.
+const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+async function askHistory(args) {
+  for (let i = 0; i < 28; i += 1) {
+    const res = await call('history', args);
+    if (res && res.state === 'hit') return res;
+    if (res && res.state === 'error') throw new ApiError(res.status === 404 ? 'HISTORICO_SIN_DATOS' : 'HISTORICO_FALLO');
+    await wait(i < 5 ? 500 : 900);
+  }
+  throw new ApiError('HISTORICO_FALLO');
+}
+const asked = new Map();
+export function loadHistory(season, event, category, session) {
+  const key = [season, event, category, session].map((v) => v || '').join('|');
+  const hit = asked.get(key);
+  if (hit && Date.now() - hit.at < 10 * 60000) return hit.promise;
+  const args = {};
+  if (season) args.p_season = season;
+  if (event) args.p_event = event;
+  if (category) args.p_category = category;
+  if (session) args.p_session = session;
+  const promise = askHistory(args);
+  asked.set(key, { at: Date.now(), promise });
+  promise.catch(() => asked.get(key)?.promise === promise && asked.delete(key));
+  return promise;
+}
+
 function deviceLabel() {
   const ua = navigator.userAgent || '';
   if (/iPhone|iPad|iPod/.test(ua)) return 'iPhone';

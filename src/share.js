@@ -1,6 +1,7 @@
 // Imágenes para compartir en el grupo: clasificación, parrilla y horario.
 // Se pintan en la propia app, a 1080 px de ancho, con los colores y tipografías de la porra.
 import { bigName, conditionText, fullName, isRace, rowRider, rowTime, titleName } from './results.js';
+import { oldRider, oldTime } from './history.js';
 import { dateRange, dayKey, hm } from './time.js';
 
 const W = 1080;
@@ -132,9 +133,14 @@ function footer(ctx, height, left, right = 'Datos oficiales de MotoGP') {
 }
 
 // Clasificación de una sesión.
-export async function resultImage({ event, session, rows, d }) {
+export async function resultImage({ event, session, rows, d, old = false }) {
   await fonts();
   const race = isRace(session.code);
+  // En el histórico no hay equipos de hoy ni dorsales antiguos, y los puntos solo salen si los hubo.
+  const riderOf = (row) => (old ? oldRider(row) : rowRider(row, d, session.category));
+  const timeOf = (row) => (old ? oldTime(row, race) : rowTime(row, race));
+  const withPoints = race && (!old || rows.some((r) => r.points > 0));
+  const withPlates = !old || rows.some((r) => r.number != null && r.number !== '');
   const rowH = 52;
   const top = 302;
   const { canvas, ctx } = canvasOf(top + rows.length * rowH + 82);
@@ -143,27 +149,28 @@ export async function resultImage({ event, session, rows, d }) {
     title: bigName(session.code),
     titleSize: 112,
     sub: conditionText(session.condition) || ' ',
-    rightTop: `GP de ${event.name}`,
-    rightSub: `${event.circuit} · ${longDate(session.starts_at)}`,
+    rightTop: event.title || `GP de ${event.name}`,
+    rightSub: `${event.circuit} · ${session.when || longDate(session.starts_at)}`,
   });
   kerb(ctx, bottom + 24);
   let y = bottom + 24 + 14 + 16;
+  const nameX = withPlates ? PAD + 186 : PAD + 84;
   rows.forEach((row) => {
-    const r = rowRider(row, d, session.category);
+    const r = riderOf(row);
     const mid = y + 25;
     const first = row.pos === 1;
     text(ctx, row.pos == null ? '–' : String(row.pos), PAD + 58, mid + 11, { font: F(800, 30, DISPLAY), color: first ? C.redText : C.text, align: 'right' });
-    plate(ctx, PAD + 80, mid - 19, 84, 38, 10, r.color, r.ink, r.number, 24);
-    text(ctx, r.full, PAD + 186, mid + 13, { font: F(600, 38, COND), maxWidth: 384 });
-    text(ctx, r.moto, 642, mid + 9, { font: F(400, 26, BODY), color: C.text2, maxWidth: race ? 118 : 150 });
+    if (withPlates && r.number !== '' && r.number != null) plate(ctx, PAD + 80, mid - 19, 84, 38, 10, r.color, r.ink, r.number, 24);
+    text(ctx, r.full, nameX, mid + 13, { font: F(600, 38, COND), maxWidth: 626 - nameX });
+    text(ctx, r.moto, 642, mid + 9, { font: F(400, 26, BODY), color: C.text2, maxWidth: withPoints ? 118 : 150 });
     // En Sprint y carrera, a la derecha del todo, los puntos que da cada piloto en la porra.
-    const timeRight = race ? W - PAD - 78 : W - PAD;
-    text(ctx, rowTime(row, race), timeRight, mid + 10, { font: F(700, 29, DISPLAY), color: first ? C.text : C.text2, align: 'right', maxWidth: race ? 196 : 222 });
-    if (race) text(ctx, row.points ? String(row.points) : '', W - PAD, mid + 10, { font: F(800, 29, DISPLAY), color: C.redText, align: 'right', maxWidth: 62 });
+    const timeRight = withPoints ? W - PAD - 78 : W - PAD;
+    text(ctx, timeOf(row), timeRight, mid + 10, { font: F(700, 29, DISPLAY), color: first ? C.text : C.text2, align: 'right', maxWidth: withPoints ? 196 : 222 });
+    if (withPoints) text(ctx, row.points ? String(row.points) : '', W - PAD, mid + 10, { font: F(800, 29, DISPLAY), color: C.redText, align: 'right', maxWidth: 62 });
     hline(ctx, y + 50);
     y += rowH;
   });
-  footer(ctx, canvas.height, race ? 'Diferencia con el ganador · en rojo, los puntos' : 'Mejor vuelta y diferencia con el primero');
+  footer(ctx, canvas.height, !race ? 'Mejor vuelta y diferencia con el primero' : withPoints ? 'Diferencia con el ganador · en rojo, los puntos' : 'Diferencia con el ganador');
   return canvas;
 }
 

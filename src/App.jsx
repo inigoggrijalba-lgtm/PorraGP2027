@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { indexOf } from './data.js';
 import { ErrorScreen, Join, Loading, PickPlayers, Setup } from './screens/Gate.jsx';
+import History from './screens/History.jsx';
 import Home from './screens/Home.jsx';
 import Admin from './screens/Admin.jsx';
 import { Install, More, Players, Rules } from './screens/More.jsx';
@@ -44,7 +45,7 @@ function Ready() {
     screen = <Vote changing={b === 'cambiar'} />;
   } else if (a === 'porra') {
     tab = 'porra';
-    screen = <Porra tab={b === 'gp' ? 'gp' : 'general'} />;
+    screen = <Porra tab={b === 'gp' ? 'gp' : b === 'estadisticas' ? 'estadisticas' : 'general'} />;
   } else if (a === 'motogp') {
     tab = 'motogp';
     screen = b === 'calendario' ? <Calendar /> : b === 'pilotos' ? <RidersList /> : b === 'piloto' ? <RiderDetail key={c} id={c} /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
@@ -53,7 +54,7 @@ function Ready() {
     screen = <FullSchedule eventId={b} />;
   } else if (a === 'mas') {
     tab = 'mas';
-    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : b === 'avisos' ? <Notices /> : <More />;
+    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : b === 'avisos' ? <Notices /> : b === 'historico' ? <History /> : <More />;
   } else {
     screen = (
       <>

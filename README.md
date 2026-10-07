@@ -31,6 +31,7 @@ Primera configuración, entrada con el código de la porra, jugadores de cada m�
 y horario, votar y cambiar el voto, clasificación, votos y puntos por GP, calendario, horario completo,
 reglas, instalación, fotos de los pilotos, panel de administrador, resultados de todas las sesiones
 (MotoGP, Moto2 y Moto3) con sus PDF oficiales, parrilla e imágenes para compartir (clasificación,
-parrilla y horario), pilotos de las tres categorías con su ficha y avisos al móvil.
+parrilla y horario), pilotos de las tres categorías con su ficha, avisos al móvil, estadísticas de la
+porra (evolución, puntos por GP y pilotos más votados) e histórico de resultados desde 1949.
 
-Pendiente: estadísticas, histórico y noticias.
+Pendiente: noticias.

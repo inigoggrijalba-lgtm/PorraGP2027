@@ -43,7 +43,7 @@ function Row({ pos, first, rider, time, points }) {
   );
 }
 
-function Files({ files, except }) {
+export function Files({ files, except }) {
   const list = fileList(files, except);
   if (!list.length) return null;
   return (

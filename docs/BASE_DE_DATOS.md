@@ -8,7 +8,8 @@ política, así que no hay acceso directo.
 Las migraciones aplicadas están en el historial del propio proyecto de Supabase:
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
-`006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`.
+`006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`,
+`009_historico`.
 
 ## Tablas (`porra.*`)
 
@@ -28,6 +29,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 | `devices`, `device_players` | Móviles dados de alta y los jugadores guardados en cada uno |
 | `vote_log` | Historial de votos y cambios, incluidos los del administrador |
 | `attempts` | Intentos de código y contraseña, para limitar los fallidos |
+| `api_cache` | Lo ya consultado del histórico de MotoGP (temporadas, grandes premios, sesiones y clasificaciones) |
 
 ## Funciones (`public.*`)
 
@@ -36,7 +38,7 @@ Acceso: `porra_status`, `setup_porra` (solo la primera vez), `join_device`,
 
 Lectura: `get_bootstrap`, `get_event`, `get_session_result` (clasificación de una
 sesión), `get_grid` (parrilla de un GP y categoría), `get_standings`, `get_gp_riders` y
-`get_gp_rider` (pilotos y ficha).
+`get_gp_rider` (pilotos y ficha), `history` (histórico de resultados).
 
 Avisos: `push_public_key`, `push_subscribe`, `push_state`, `push_unsubscribe`, `push_test`.
 
@@ -109,6 +111,23 @@ sincronización.
 El cierre del voto es la hora de la Sprint. Si el endpoint aún da un horario fuera
 de las fechas del GP, no se usa: el cierre queda provisional, el sábado a las 00:00
 del circuito, hasta que publique el bueno.
+
+## Histórico de resultados
+
+`history(p_token, p_season, p_event, p_category, p_session)` baja un escalón por cada
+dato que se le pasa: sin nada devuelve las temporadas (desde 1949); con la temporada, sus
+grandes premios y categorías; con GP y categoría, las sesiones; con la sesión, la
+clasificación.
+
+Los datos no se copian de antemano: la primera vez que alguien pide algo, la base de
+datos lanza la petición a MotoGP en segundo plano (`pg_net`) y contesta
+`{"state":"pending"}`; la app vuelve a preguntar cada medio segundo hasta recibir
+`{"state":"hit", ...}`. Lo recibido se guarda recortado en `porra.api_cache` y la
+siguiente consulta sale al momento. Las temporadas pasadas se guardan 180 días; la
+temporada en curso, entre 10 minutos y 1 hora, y mientras se refresca se sigue
+enseñando lo anterior. Solo se aceptan identificadores que MotoGP haya dado antes
+(la temporada tiene que estar en la lista de temporadas, el GP en la de esa temporada…),
+así que la caché no puede llenarse con peticiones inventadas.
 
 ## Datos de partida (temporada 2026)
 

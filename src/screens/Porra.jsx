@@ -1,7 +1,8 @@
-// Pestaña Porra: clasificación general y votos y puntos de cada GP.
+// Pestaña Porra: clasificación general, votos y puntos de cada GP, y estadísticas.
 import { useEffect, useRef, useState } from 'react';
 import { now } from '../store.js';
 import { Offline, Plate, TopBar, useData } from '../ui.jsx';
+import Stats from './Stats.jsx';
 
 function Tabs({ current }) {
   return (
@@ -12,9 +13,9 @@ function Tabs({ current }) {
       <a href="#/porra/gp" aria-current={current === 'gp' ? 'page' : undefined}>
         Por GP
       </a>
-      <span className="soon">
-        Estadísticas <small>Pronto</small>
-      </span>
+      <a href="#/porra/estadisticas" aria-current={current === 'estadisticas' ? 'page' : undefined}>
+        Estadísticas
+      </a>
     </div>
   );
 }
@@ -153,7 +154,7 @@ export default function Porra({ tab }) {
       <main className="main has-nav">
         <Offline />
         <Tabs current={tab} />
-        {tab === 'gp' ? <ByGp /> : <General />}
+        {tab === 'gp' ? <ByGp /> : tab === 'estadisticas' ? <Stats /> : <General />}
       </main>
     </>
   );
