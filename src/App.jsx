@@ -54,7 +54,7 @@ function Ready() {
     screen = <FullSchedule eventId={b} />;
   } else if (a === 'mas') {
     tab = 'mas';
-    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : b === 'avisos' ? <Notices /> : b === 'historico' ? <History /> : <More />;
+    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : b === 'avisos' ? <Notices /> : b === 'historico' ? <History key={route.slice(2).join('/')} /> : <More />;
   } else {
     screen = (
       <>
