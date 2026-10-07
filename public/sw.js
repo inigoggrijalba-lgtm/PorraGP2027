@@ -1,7 +1,7 @@
 // Guarda la app para que abra al instante y sin cobertura. Los datos siempre se piden a la red.
 const VERSION = '%VERSION%';
 const CACHE = `porragp-${VERSION}`;
-const SHELL = ['./', './index.html', '%APP_JS%', '%APP_CSS%', './manifest.webmanifest', './icon.svg', './icon-192.png'];
+const SHELL = ['./', './index.html', '%APP_JS%', '%APP_CSS%', './manifest.webmanifest', './icon.svg', './icon-192.png', './badge-96.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -12,6 +12,43 @@ self.addEventListener('activate', (event) => {
     caches.keys()
       .then((keys) => Promise.all(keys.filter((k) => k.startsWith('porragp-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
+  );
+});
+
+// Aviso recibido: se enseña aunque la app esté cerrada.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (_) {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'PorraGP', {
+      body: data.body || '',
+      tag: data.tag || undefined,
+      renotify: !!data.tag,
+      icon: './icon-192.png',
+      badge: './badge-96.png',
+      data: { url: data.url || '' },
+    }),
+  );
+});
+
+// Al tocar el aviso se abre la app en la pantalla que toca (votar, puntos, resultados...).
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const hash = (event.notification.data && event.notification.data.url) || '';
+  const target = self.registration.scope + hash;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      const open = list.find((c) => c.url.startsWith(self.registration.scope));
+      if (open) {
+        open.postMessage({ type: 'go', hash });
+        return open.focus();
+      }
+      return self.clients.openWindow(target);
+    }),
   );
 });
 

@@ -7,7 +7,7 @@ import { Avatar, Icon, Offline, TopBar, useData } from '../ui.jsx';
 const ITEMS = [
   ['history', 'Histórico', 'Resultados de todas las temporadas desde 1970', null],
   ['news', 'Noticias', 'Medios especializados en MotoGP', null],
-  ['bell', 'Avisos', 'Recordatorios de voto y resultados', null],
+  ['bell', 'Avisos', 'Recordatorios de voto y resultados', 'mas/avisos'],
   ['rules', 'Reglas de la porra', 'Cómo se vota y cómo se puntúa', 'mas/reglas'],
   ['install', 'Instalar la app', 'Pasos para Android y iPhone', 'mas/instalar'],
   ['lock', 'Administrador', 'Entra con contraseña', 'mas/admin'],

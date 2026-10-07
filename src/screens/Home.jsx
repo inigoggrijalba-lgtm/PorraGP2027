@@ -2,6 +2,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { sessionsOf } from '../data.js';
 import { ScheduleShare } from './MotoGP.jsx';
+import { canOfferPush } from '../push.js';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
@@ -274,6 +275,40 @@ function Votes({ event, open }) {
   );
 }
 
+// Invitación a activar los avisos, hasta que el jugador decida.
+function PushHint() {
+  const [show, setShow] = useState(() => {
+    try {
+      return canOfferPush() && !localStorage.getItem('porragp.pushHint');
+    } catch {
+      return false;
+    }
+  });
+  if (!show) return null;
+  const hide = () => {
+    try {
+      localStorage.setItem('porragp.pushHint', '1');
+    } catch {
+      // sin almacenamiento volverá a salir, nada más
+    }
+    setShow(false);
+  };
+  return (
+    <div className="notice hint">
+      <span className="amber">
+        <Icon name="bell" size={18} />
+      </span>
+      <span style={{ flex: 1, color: 'var(--text)' }}>Activa los avisos y no se te pasará votar.</span>
+      <a className="btn faint lit" href="#/mas/avisos">
+        Activar
+      </a>
+      <button className="back" style={{ width: 36 }} onClick={hide} aria-label="Ocultar este mensaje">
+        <Icon name="close" size={16} />
+      </button>
+    </div>
+  );
+}
+
 function MiniStandings() {
   const { d, standings, active } = useData();
   const list = standings.filter((s) => s.active);
@@ -363,6 +398,7 @@ export default function Home() {
         </div>
         {open ? <OpenState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>
+      <PushHint />
       <section className="sec">
         <div className="sec-head">
           <h2 className="h2">Horario MotoGP</h2>

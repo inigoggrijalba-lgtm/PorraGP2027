@@ -54,6 +54,10 @@ const MESSAGES = {
   CONTRASENA_INCORRECTA: 'Contraseña incorrecta.',
   NO_ADMIN: 'La sesión de administrador ha caducado. Vuelve a entrar.',
   NOMBRE_VACIO: 'Escribe un nombre.',
+  AVISOS_NO_COMPATIBLES: 'Este navegador no permite recibir avisos de la porra.',
+  AVISOS_SIN_ACTIVAR: 'Los avisos no están activados en este móvil.',
+  AVISOS_DENEGADOS: 'Has bloqueado los avisos de la porra. Actívalos en los ajustes del navegador y vuelve a intentarlo.',
+  AVISOS_NO_LISTOS: 'Los avisos aún no están listos. Prueba otra vez en un minuto.',
   NOMBRE_REPETIDO: 'Ya hay un jugador con ese nombre.',
 };
 

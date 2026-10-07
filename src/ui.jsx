@@ -42,6 +42,12 @@ const PATHS = {
       <path d="M5 13v6h14v-6" />
     </>
   ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16 16l4.5 4.5" />
+    </>
+  ),
   pdf: (
     <>
       <path d="M7 3h7l4 4v14H7z" />
@@ -279,10 +285,10 @@ export function thumb(url, width) {
 
 // Hueco de la foto sobre el color del equipo. Si no hay foto o no carga, una silueta.
 export function Photo({ rider, size = 's', children }) {
-  const dims = { s: [50, 55], m: [58, 64], xm: [80, 88], l: [100, 110] }[size];
+  const dims = { s: [50, 55], m: [58, 64], xm: [80, 88], l: [100, 110], xl: [150, 165] }[size];
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const src = failed ? null : thumb(rider.photo_url, size === 'l' || size === 'xm' ? 400 : 240);
+  const src = failed ? null : thumb(rider.photo_url, size === 'l' || size === 'xm' || size === 'xl' ? 400 : 240);
   return (
     <span className={`photo ${size}`} style={{ background: rider.team_color || '#2B2B2F', color: rider.text_color || '#F5F4F2' }}>
       {src ? <img src={src} alt="" decoding="async" style={loaded ? undefined : { opacity: 0 }} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} /> : null}

@@ -5,6 +5,8 @@ import Home from './screens/Home.jsx';
 import Admin from './screens/Admin.jsx';
 import { Install, More, Players, Rules } from './screens/More.jsx';
 import { Calendar, FullSchedule, Results } from './screens/MotoGP.jsx';
+import Notices from './screens/Notices.jsx';
+import { RiderDetail, RidersList } from './screens/Riders.jsx';
 import Porra from './screens/Porra.jsx';
 import Vote from './screens/Vote.jsx';
 import { init, now, refresh, useStore } from './store.js';
@@ -45,13 +47,13 @@ function Ready() {
     screen = <Porra tab={b === 'gp' ? 'gp' : 'general'} />;
   } else if (a === 'motogp') {
     tab = 'motogp';
-    screen = b === 'calendario' ? <Calendar /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
+    screen = b === 'calendario' ? <Calendar /> : b === 'pilotos' ? <RidersList /> : b === 'piloto' ? <RiderDetail key={c} id={c} /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
   } else if (a === 'horario') {
     tab = cameFrom() === 'motogp' ? 'motogp' : '';
     screen = <FullSchedule eventId={b} />;
   } else if (a === 'mas') {
     tab = 'mas';
-    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : <More />;
+    screen = b === 'jugadores' ? <Players /> : b === 'reglas' ? <Rules /> : b === 'instalar' ? <Install /> : b === 'admin' ? <Admin /> : b === 'avisos' ? <Notices /> : <More />;
   } else {
     screen = (
       <>

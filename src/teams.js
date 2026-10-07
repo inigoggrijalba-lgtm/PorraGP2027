@@ -19,7 +19,7 @@ export function teamColors(teamName) {
   return t ? [t[2], t[3]] : ['#3A3A3F', '#F5F4F2'];
 }
 
-function teamIndex(name) {
+export function teamIndex(name) {
   const i = TEAMS.findIndex(([re]) => re.test(name || ''));
   return i < 0 ? TEAMS.length : i;
 }

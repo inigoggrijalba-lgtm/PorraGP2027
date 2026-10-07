@@ -8,7 +8,7 @@ política, así que no hay acceso directo.
 Las migraciones aplicadas están en el historial del propio proyecto de Supabase:
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
-`006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`.
+`006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`.
 
 ## Tablas (`porra.*`)
 
@@ -20,6 +20,8 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 | `events` | Grandes premios: ronda, zona horaria del circuito, `sprint_at` (cierre del voto), `race_at`, `close_override` |
 | `sessions` | Sesiones de cada GP (MotoGP, Moto2, Moto3) con su clasificación y los PDF |
 | `grids` | Parrilla oficial de cada GP y categoría (posición y tiempo de clasificación) |
+| `gp_riders` | Pilotos de MotoGP, Moto2 y Moto3: equipo, dorsal, foto, puesto en el Mundial y palmarés |
+| `push_subs`, `push_queue` | Móviles con los avisos activados y avisos pendientes o enviados |
 | `rider_points` | Posición y puntos de cada piloto en Sprint y carrera |
 | `votes` | Un voto por jugador y GP; `changes_used` cuenta el cambio permitido |
 | `scores` | Puntos de cada jugador por GP (`calc`, `hoja` o `manual`) |
@@ -33,7 +35,10 @@ Acceso: `porra_status`, `setup_porra` (solo la primera vez), `join_device`,
 `set_device_player`, `admin_login`, `admin_logout`.
 
 Lectura: `get_bootstrap`, `get_event`, `get_session_result` (clasificación de una
-sesión), `get_grid` (parrilla de un GP y categoría), `get_standings`.
+sesión), `get_grid` (parrilla de un GP y categoría), `get_standings`, `get_gp_riders` y
+`get_gp_rider` (pilotos y ficha).
+
+Avisos: `push_public_key`, `push_subscribe`, `push_state`, `push_unsubscribe`, `push_test`.
 
 Voto: `cast_vote(p_token, p_player, p_event, p_rider)`.
 
@@ -75,6 +80,28 @@ Cada 5 minutos, `pg_cron` llama a la función `sync-motogp`
 
 6. Parrillas: 20 minutos después de cada Q2 se pide la parrilla oficial y se refresca
    cada media hora hasta la carrera, por si hay sanciones.
+
+7. Pilotos y Mundial: una vez al día y después de cada carrera se guardan los pilotos de
+   las tres categorías y la clasificación del Mundial. El palmarés de cada piloto se
+   pide poco a poco (12 por pasada) y se refresca tras cada carrera.
+
+## Avisos al móvil
+
+Cada 5 minutos `pg_cron` llama a la función `send-push`
+(`supabase/functions/send-push/`). La base de datos decide qué avisos tocan
+(`push_plan`) y la función los cifra y los manda al servicio de avisos de cada móvil.
+
+| Aviso | Cuándo | A quién |
+|---|---|---|
+| Recordatorio de voto | 24 h antes del cierre | Móviles donde falta alguien por votar |
+| Último aviso | 2 h antes del cierre | Móviles donde sigue faltando alguien |
+| Puntos del GP | Al llegar el resultado de la carrera | Todos |
+| Resultado de cada sesión | Al llegar cada clasificación de MotoGP | Quien lo active |
+| Horario listo | Martes de la semana de carrera, 10:00 | Administrador |
+
+De noche (22:00 a 09:00, hora peninsular) no se manda nada: el recordatorio pasa a las
+09:00 y el último aviso a las 21:30 de la víspera (`porra.remind_at`). Las claves del
+servidor se crean solas la primera vez y se guardan en `config`.
 
 Los puntos metidos a mano por el administrador (`rider_points.manual`) no los pisa la
 sincronización.

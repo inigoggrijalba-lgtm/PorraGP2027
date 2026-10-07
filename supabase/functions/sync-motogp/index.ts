@@ -74,24 +74,110 @@ function row(c: Any) {
   };
 }
 
-// Fotos de los pilotos de MotoGP, una vez al día. Si falla, no afecta al resto de la sincronización.
-async function syncPhotos(secret: string): Promise<Any> {
+// Pilotos de las tres categorías (equipo, dorsal, foto) y clasificación del Mundial.
+// Una vez al día y después de cada carrera. Si falla, no afecta al resto de la sincronización.
+async function syncRiders(secret: string): Promise<Any> {
   try {
     const plan = await rpc("sync_riders_plan", { p_secret: secret });
     if (!plan?.due) return null;
     // Equipos y pilotos usan otros identificadores de categoría que los resultados.
-    const cats = await api(`/categories?seasonYear=${plan.season}`);
-    const gp = cats.find((c: Any) => String(c.name).replace(/[™®]/g, "").trim() === "MotoGP");
-    if (!gp) return { error: "sin categoría MotoGP" };
-    const teams = await api(`/teams?categoryUuid=${gp.id}&seasonYear=${plan.season}`);
-    const riders = teams.flatMap((t: Any) =>
-      (t.riders ?? []).map((r: Any) => ({
-        rider_uuid: r.id,
-        legacy_id: r.legacy_id ?? null,
-        photo: r.current_career_step?.pictures?.profile?.main ?? null,
-      }))
-    );
-    return await rpc("sync_riders_ingest", { p_secret: secret, p: { riders } });
+    const cats: Any[] = await api(`/categories?seasonYear=${plan.season}`);
+    const roster: Any[] = [];
+    const standings: Any[] = [];
+    for (const category of CATEGORIES) {
+      const cat = cats.find((c: Any) => clean(c.name) === category);
+      if (cat) {
+        const teams: Any[] = await api(`/teams?categoryUuid=${cat.id}&seasonYear=${plan.season}`);
+        for (const t of teams) {
+          for (const r of t.riders ?? []) {
+            const step = r.current_career_step ?? {};
+            roster.push({
+              rider_uuid: r.id,
+              category,
+              legacy_id: r.legacy_id ?? null,
+              name: r.name ?? null,
+              surname: r.surname ?? null,
+              number: step.number ?? null,
+              team: step.sponsored_team ?? step.team?.name ?? t.name ?? null,
+              constructor: step.team?.constructor?.name ?? t.constructor?.name ?? null,
+              country: r.country?.iso ?? null,
+              birth_date: r.birth_date ?? null,
+              birth_city: r.birth_city ?? null,
+              photo: step.pictures?.profile?.main ?? null,
+              kind: step.type ?? null,
+              in_grid: step.in_grid ?? true,
+            });
+          }
+        }
+      }
+      const resultsCat = plan.categories?.[category];
+      if (plan.season_uuid && resultsCat) {
+        try {
+          const st = await api(`/results/standings?seasonUuid=${plan.season_uuid}&categoryUuid=${resultsCat}`);
+          for (const c of st.classification ?? []) {
+            standings.push({
+              rider_uuid: c.rider?.riders_api_uuid ?? c.rider?.riders_id ?? null,
+              position: c.position ?? null,
+              points: c.points ?? null,
+              race_wins: c.race_wins ?? null,
+              podiums: c.podiums ?? null,
+              sprint_wins: c.sprint_wins ?? null,
+            });
+          }
+        } catch (_) {
+          // sin clasificación del Mundial todavía (principio de temporada)
+        }
+      }
+    }
+    if (!roster.length) return { error: "MotoGP no ha devuelto pilotos" };
+    return await rpc("sync_riders_ingest", { p_secret: secret, p: { roster, standings } });
+  } catch (err) {
+    return { error: String(err) };
+  }
+}
+
+const clean = (name: Any) => String(name ?? "").replace(/[™®]/g, "").trim();
+
+// De todo lo que da MotoGP de un piloto, nos quedamos con lo que enseña su ficha.
+function compactStats(s: Any) {
+  const counts = (o: Any) =>
+    o ? { total: o.total ?? 0, cats: (o.categories ?? []).filter((c: Any) => c.count > 0).map((c: Any) => [clean(c.category?.name), c.count]) } : null;
+  const moments = (list: Any) =>
+    (Array.isArray(list) ? list : [])
+      .map((x: Any) => ({ cat: clean(x.category?.name), season: Number(x.event?.season) || null, iso: x.event?.country?.iso ?? null, gp: x.event?.short_name ?? null }))
+      .filter((x: Any) => x.season);
+  const earliest = (list: Any) => moments(list).sort((a: Any, b: Any) => a.season - b.season)[0] ?? null;
+  const latest = (list: Any) => moments(list).sort((a: Any, b: Any) => b.season - a.season)[0] ?? null;
+  return {
+    titles: counts(s.world_championship_wins),
+    wins: counts(s.grand_prix_victories),
+    podiums: counts(s.podiums),
+    poles: counts(s.poles),
+    races: counts(s.all_races),
+    fastest_laps: counts(s.race_fastest_laps),
+    sprint_wins: s.sprint_podiums?.positions?.["1"]?.count ?? 0,
+    sprint_podiums: s.sprint_podiums?.total ?? 0,
+    first_gp: earliest(s.first_grand_prix),
+    first_win: earliest(s.first_grand_prix_victories),
+    first_win_motogp: moments(s.first_grand_prix_victories).find((x: Any) => x.cat === "MotoGP") ?? null,
+    last_win: latest(s.last_wins),
+  };
+}
+
+// Palmarés de cada piloto: unos pocos por pasada, para no cargar a MotoGP.
+async function syncStats(secret: string): Promise<Any> {
+  try {
+    const wanted: Any[] = await rpc("sync_stats_plan", { p_secret: secret });
+    if (!wanted?.length) return null;
+    const stats = await pool(wanted, 4, async (w) => {
+      try {
+        return { rider_uuid: w.rider_uuid, stats: compactStats(await api(`/riders/${w.legacy_id}/stats`)) };
+      } catch (err) {
+        // Si MotoGP no tiene estadísticas de ese piloto se marca como revisado, sin datos.
+        return String(err).includes("MotoGP 404") ? { rider_uuid: w.rider_uuid, stats: null } : null;
+      }
+    });
+    return await rpc("sync_stats_ingest", { p_secret: secret, p: { stats: stats.filter(Boolean) } });
   } catch (err) {
     return { error: String(err) };
   }
@@ -225,7 +311,7 @@ Deno.serve(async (req: Request) => {
       payload.errors = errors;
       rounds.push(await rpc("sync_ingest", { p_secret: secret, p: payload }));
     }
-    return Response.json({ ok: true, rounds, photos: await syncPhotos(secret), grids: await syncGrids(secret) });
+    return Response.json({ ok: true, rounds, riders: await syncRiders(secret), stats: await syncStats(secret), grids: await syncGrids(secret) });
   } catch (err) {
     const message = String(err);
     try {

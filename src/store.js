@@ -95,7 +95,7 @@ async function checkStatus() {
 }
 
 // Llamadas que necesitan el identificador del móvil. Si el servidor ya no lo reconoce, se vuelve a pedir el código.
-async function call(name, args = {}) {
+export async function call(name, args = {}) {
   try {
     return await rpc(name, { p_token: token, ...args });
   } catch (e) {
@@ -165,6 +165,9 @@ async function cached(key, load) {
 }
 export const loadResult = (sessionId) => cached(`s|${sessionId}`, () => call('get_session_result', { p_session: sessionId }));
 export const loadGrid = (eventId, category) => cached(`g|${eventId}|${category}`, () => call('get_grid', { p_event: eventId, p_category: category }));
+// Pilotos de las tres categorías y ficha de cada uno.
+export const loadRiders = () => cached('riders', () => call('get_gp_riders'));
+export const loadRider = (id) => cached(`rider|${id}`, () => call('get_gp_rider', { p_rider: id }));
 
 function deviceLabel() {
   const ua = navigator.userAgent || '';

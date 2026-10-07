@@ -528,3 +528,44 @@ svg { flex: none; display: block; }
   .rlist { margin-left: 16px; margin-right: 16px; }
   .schips { padding-left: 16px; padding-right: 16px; }
 }
+
+/* Pilotos */
+.rteam { padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.rteam-head { display: flex; align-items: center; gap: 8px; font-family: var(--cond); font-weight: 600; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); min-width: 0; }
+.rteam-head i { flex: none; width: 14px; height: 14px; clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
+.rteam-head span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rgrid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.rcard { height: 76px; display: flex; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.rcard-info { flex: 1; min-width: 0; padding: 9px 4px 9px 10px; display: flex; flex-direction: column; justify-content: space-between; }
+.rcard-pts { font-family: var(--display); font-weight: 700; font-size: 11px; color: var(--text2); white-space: nowrap; }
+.rcard .photo.s { width: 56px; }
+.rhero { height: 260px; display: flex; background: var(--panel); border-bottom: 1px solid var(--line); overflow: hidden; }
+.rhero-info { flex: 1; min-width: 0; padding: 20px 0 20px 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.rhero-num { font-family: var(--display); font-weight: 900; font-size: 76px; line-height: 1; color: var(--red-text); }
+.rhero-first { font-family: var(--cond); font-weight: 500; font-size: 26px; line-height: 1; }
+.rhero-last { font-family: var(--cond); font-weight: 700; font-size: var(--fs, 44px); line-height: 1; text-transform: uppercase; overflow-wrap: anywhere; }
+.photo.xl { width: 190px; clip-path: polygon(40px 0, 100% 0, 100% 100%, 0 100%); }
+.ktiles { padding: 20px 20px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ktile { min-height: 112px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; background: var(--panel); border: 1px solid var(--line); }
+.ktile-n { font-family: var(--display); font-weight: 800; font-size: 36px; line-height: 1; }
+.ktile-sub { font-size: 12px; color: var(--text2); min-height: 15px; }
+
+/* Avisos */
+.swrow { min-height: 72px; padding: 8px 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+.swtext { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.swtext span { font-weight: 600; font-size: 16px; }
+.swtext small { font-size: 13px; color: var(--text2); }
+.sw { flex: none; width: 56px; height: 44px; display: flex; align-items: center; }
+.sw:disabled { opacity: 0.6; }
+.sw-track { width: 56px; height: 32px; padding: 3px; display: flex; justify-content: flex-start; border: 1px solid var(--text3); border-radius: 16px; }
+.sw-track.on { justify-content: flex-end; background: var(--text); border-color: var(--text); }
+.sw-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--text3); }
+.sw-track.on .sw-dot { background: var(--bg); }
+.notice.hint { margin: 12px 20px 0; padding: 8px 4px 8px 12px; gap: 10px; }
+@media (max-width: 359px) {
+  .rhero-num { font-size: 60px; }
+  .rhero-last { font-size: calc(var(--fs, 44px) * 0.82); }
+  .rcard-pts { display: none; }
+  .photo.xl { width: 150px; }
+  .notice.hint { margin-left: 16px; margin-right: 16px; }
+}

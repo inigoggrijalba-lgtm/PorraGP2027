@@ -9,7 +9,7 @@ import { cameFrom, GpNav, Icon, Offline, ShareSheet, TopBar, useData, useNow } f
 
 const CLASSES = ['MotoGP', 'Moto2', 'Moto3'];
 
-function Tabs({ current }) {
+export function Tabs({ current }) {
   return (
     <div className="tabs">
       <a href="#/motogp" aria-current={current === 'resultados' ? 'page' : undefined}>
@@ -18,9 +18,9 @@ function Tabs({ current }) {
       <a href="#/motogp/calendario" aria-current={current === 'calendario' ? 'page' : undefined}>
         Calendario
       </a>
-      <span className="soon">
-        Pilotos <small>Pronto</small>
-      </span>
+      <a href="#/motogp/pilotos" aria-current={current === 'pilotos' ? 'page' : undefined}>
+        Pilotos
+      </a>
     </div>
   );
 }
