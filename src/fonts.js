@@ -5,6 +5,9 @@ export const FONTS = [
   { id: 'saira', name: 'Saira', detail: 'Una sola familia, de trazo cuadrado' },
   { id: 'archivo', name: 'Archivo', detail: 'Títulos anchos y gruesos, texto neutro' },
   { id: 'exo', name: 'Exo 2 + Titillium Web', detail: 'Títulos técnicos, texto clásico de carreras' },
+  { id: 'saira-stencil', name: 'Saira Stencil + Saira', detail: 'Títulos con cortes, de la misma familia que el resto' },
+  { id: 'bigshoulders', name: 'Big Shoulders Stencil + Saira', detail: 'Títulos con cortes, estrechos y altos' },
+  { id: 'blackops', name: 'Black Ops One + Saira', detail: 'Títulos con cortes, anchos y muy gruesos' },
 ];
 const KEY = 'porragp.fuente';
 const valid = (id) => FONTS.some((f) => f.id === id);
@@ -42,8 +45,12 @@ export function restoreFont() {
 export function families() {
   const css = getComputedStyle(document.documentElement);
   const read = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+  const display = read('--display', "Orbitron, 'Arial Black', sans-serif");
+  const title = read('--title', display);
   return {
-    display: read('--display', "Orbitron, 'Arial Black', sans-serif"),
+    // Sin fuente propia de titulares, --title llega sin resolver: vale la de los números.
+    title: /^var\(/.test(title) ? display : title,
+    display,
     cond: read('--cond', "'Barlow Condensed', 'Arial Narrow', sans-serif"),
     body: read('--body', "Barlow, 'Segoe UI', sans-serif"),
   };

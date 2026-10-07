@@ -16,6 +16,8 @@
   --display: 'Orbitron', 'Eurostile', 'Arial Black', sans-serif;
   --body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
   --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  /* Titulares. Si no se indica otra cosa, la misma que --display (números y datos). */
+  --title: var(--display);
   --kerb: repeating-linear-gradient(135deg, #E10600 0 16px, #F5F4F2 16px 32px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -83,10 +85,10 @@ svg { flex: none; display: block; }
 .top-row { height: 64px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .top-row.with-back { padding-left: 8px; }
 .top-left { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.brand { font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: 0.02em; }
+.brand { font-family: var(--title); font-weight: 800; font-size: 22px; letter-spacing: 0.02em; }
 .brand.small-brand { font-size: 16px; }
 .brand span { color: var(--red-text); }
-.top-title { font-family: var(--display); font-weight: 800; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-title { font-family: var(--title); font-weight: 800; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
 .kerb { height: 6px; background: var(--kerb); }
 
@@ -147,9 +149,9 @@ svg { flex: none; display: block; }
 /* Bloques */
 .sec { padding: 28px 20px 0; }
 .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.h2 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; }
+.h2 { font-family: var(--title); font-weight: 700; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; }
 .page-head { padding: 20px 20px 16px; display: flex; flex-direction: column; gap: 10px; }
-.h1 { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+.h1 { font-family: var(--title); font-weight: 900; font-size: 26px; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
 .h1.s { font-size: 22px; }
 
 .cta {
@@ -203,7 +205,7 @@ svg { flex: none; display: block; }
 
 /* Inicio: próximo GP */
 .hero { padding: 24px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
-.hero-name { margin: 6px 0 2px; font-family: var(--display); font-weight: 900; font-size: 38px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.hero-name { margin: 6px 0 2px; font-family: var(--title); font-weight: 900; font-size: 38px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: anywhere; }
 .hero-name.long { font-size: 30px; }
 .count { margin-top: 20px; padding: 16px; background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
 .count-head { display: flex; align-items: center; gap: 8px; color: var(--amber); font-family: var(--cond); font-weight: 600; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -254,7 +256,7 @@ svg { flex: none; display: block; }
 .srow .time { width: 56px; flex: none; text-align: right; font-family: var(--display); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
 .two { margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 
-.day-head { height: 44px; display: flex; align-items: flex-end; padding-bottom: 8px; border-bottom: 1px solid var(--text); font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+.day-head { height: 44px; display: flex; align-items: flex-end; padding-bottom: 8px; border-bottom: 1px solid var(--text); font-family: var(--title); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
 .frow { min-height: 44px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); color: var(--text2); }
 .frow.gp { color: var(--text); font-weight: 600; }
 .frow.past { opacity: 0.55; }
@@ -362,13 +364,13 @@ svg { flex: none; display: block; }
   border-top: 1px solid var(--line);
 }
 .foot-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.foot-name { font-family: var(--display); font-weight: 800; font-size: 22px; text-transform: uppercase; overflow-wrap: anywhere; }
+.foot-name { font-family: var(--title); font-weight: 800; font-size: 22px; text-transform: uppercase; overflow-wrap: anywhere; }
 .foot-name.none { color: var(--text3); font-size: 16px; }
 
 .done { padding: 24px 20px; display: flex; flex-direction: column; gap: 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .done-head { display: flex; align-items: center; gap: 12px; }
 .ok-badge { width: 36px; height: 36px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--green); color: var(--bg); }
-.done-title { font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
+.done-title { font-family: var(--title); font-weight: 800; font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
 .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 
 .stack { display: flex; flex-direction: column; gap: 8px; }
@@ -389,10 +391,10 @@ svg { flex: none; display: block; }
 
 /* Primer arranque */
 .gate { flex: 1; display: flex; flex-direction: column; padding: calc(40px + var(--safe-t)) 24px calc(32px + var(--safe-b)); gap: 24px; }
-.gate-brand { font-family: var(--display); font-weight: 900; font-size: 34px; letter-spacing: 0.02em; }
+.gate-brand { font-family: var(--title); font-weight: 900; font-size: 34px; letter-spacing: 0.02em; }
 .gate-brand span { color: var(--red-text); }
 .gate-kerb { height: 6px; margin: 0 -24px; background: var(--kerb); }
-.gate-title { font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.15; text-transform: uppercase; }
+.gate-title { font-family: var(--title); font-weight: 800; font-size: 22px; line-height: 1.15; text-transform: uppercase; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-family: var(--cond); font-weight: 600; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); }
 .field input { height: 52px; padding: 0 14px; background: var(--panel); border: 1px solid var(--text3); border-radius: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; width: 100%; }
@@ -471,7 +473,7 @@ svg { flex: none; display: block; }
 .sq { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); }
 .sq:disabled { opacity: 0.3; }
 .gpnav-mid { min-width: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.2; text-align: center; }
-.gpnav-name { font-family: var(--display); font-weight: 800; font-size: 17px; text-transform: uppercase; }
+.gpnav-name { font-family: var(--title); font-weight: 800; font-size: 17px; text-transform: uppercase; }
 .adm-state { padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
 .led { width: 10px; height: 10px; border-radius: 50%; background: var(--text3); }
 .led.on { background: var(--green); }
@@ -689,7 +691,7 @@ svg { flex: none; display: block; }
 .fopt[aria-checked='true'] { border: 2px solid var(--red); padding: 13px; background: var(--panel2); }
 .fopt-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .fopt-name { font-family: var(--cond); font-weight: 600; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); }
-.fopt-title { font-family: var(--display); font-weight: 900; font-size: 24px; line-height: 1.1; text-transform: uppercase; }
+.fopt-title { font-family: var(--title); font-weight: 900; font-size: 24px; line-height: 1.1; text-transform: uppercase; }
 .fopt-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .fopt-cond { font-family: var(--cond); font-weight: 600; font-size: 20px; }
 .fopt-num { font-family: var(--display); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }

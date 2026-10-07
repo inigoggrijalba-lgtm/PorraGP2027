@@ -10,6 +10,7 @@ const PAD = 56;
 const C = { bg: '#0A0A0B', line: '#2B2B2F', text: '#F5F4F2', text2: '#B4B3AF', red: '#E10600', redText: '#FF4B3A' };
 // Las imágenes se pintan con las mismas tipografías que esté usando la app en ese momento.
 let DISPLAY = "Orbitron, 'Arial Black', sans-serif";
+let TITLE = DISPLAY;
 let COND = "'Barlow Condensed', 'Arial Narrow', sans-serif";
 let BODY = "Barlow, 'Segoe UI', sans-serif";
 
@@ -22,9 +23,9 @@ const longDate = (v) => `${weekday(v)} ${dayNum(v)} ${fmt({ month: 'short' }).fo
 
 // Las tipografías tienen que estar cargadas antes de pintar; si no, el lienzo usa otra.
 async function fonts() {
-  ({ display: DISPLAY, cond: COND, body: BODY } = families());
+  ({ title: TITLE, display: DISPLAY, cond: COND, body: BODY } = families());
   if (!document.fonts || !document.fonts.load) return;
-  const wanted = [`900 100px ${DISPLAY}`, `800 40px ${DISPLAY}`, `700 30px ${DISPLAY}`, `500 30px ${DISPLAY}`, `700 40px ${COND}`, `600 40px ${COND}`, `500 40px ${COND}`, `400 28px ${BODY}`];
+  const wanted = [`900 100px ${TITLE}`, `900 100px ${DISPLAY}`, `800 40px ${DISPLAY}`, `700 30px ${DISPLAY}`, `500 30px ${DISPLAY}`, `700 40px ${COND}`, `600 40px ${COND}`, `500 40px ${COND}`, `400 28px ${BODY}`];
   await Promise.all(wanted.map((f) => document.fonts.load(f).catch(() => null)));
 }
 
@@ -115,7 +116,7 @@ function hline(ctx, y, color = C.line, width = 2, x0 = PAD, x1 = W - PAD) {
 function header(ctx, { label, title, titleSize, sub, rightTop, rightSub }) {
   const rightW = 400;
   text(ctx, upper(label), PAD, 86, { font: F(600, 30, COND), color: C.text2, spacing: 4, maxWidth: W - 2 * PAD - 180 });
-  text(ctx, upper(title), PAD, 86 + titleSize * 0.92, { font: F(900, titleSize, DISPLAY), spacing: 1, maxWidth: W - 2 * PAD - rightW - 32 });
+  text(ctx, upper(title), PAD, 86 + titleSize * 0.92, { font: F(900, titleSize, TITLE), spacing: 1, maxWidth: W - 2 * PAD - rightW - 32 });
   const bottom = 86 + titleSize * 0.92 + (sub ? 46 : 12);
   if (sub) text(ctx, sub, PAD, bottom - 4, { font: F(400, 28, BODY), color: C.text2, maxWidth: W - 2 * PAD - rightW - 32 });
 
@@ -125,8 +126,8 @@ function header(ctx, { label, title, titleSize, sub, rightTop, rightSub }) {
   // "PorraGP" con las dos últimas letras en rojo
   ctx.font = `800 40px ${DISPLAY}`;
   const gp = ctx.measureText('GP').width;
-  text(ctx, 'GP', rx, bottom - 100, { font: F(800, 40, DISPLAY), color: C.redText, align: 'right' });
-  text(ctx, 'Porra', rx - gp, bottom - 100, { font: F(800, 40, DISPLAY), align: 'right' });
+  text(ctx, 'GP', rx, bottom - 100, { font: F(800, 40, TITLE), color: C.redText, align: 'right' });
+  text(ctx, 'Porra', rx - gp, bottom - 100, { font: F(800, 40, TITLE), align: 'right' });
   return bottom;
 }
 
