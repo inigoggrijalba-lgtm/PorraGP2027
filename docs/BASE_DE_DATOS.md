@@ -9,7 +9,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
 `006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`,
-`009_historico`.
+`009_historico`, `010_historico_adelanta_carrera`.
 
 ## Tablas (`porra.*`)
 
@@ -127,7 +127,9 @@ siguiente consulta sale al momento. Las temporadas pasadas se guardan 180 días;
 temporada en curso, entre 10 minutos y 1 hora, y mientras se refresca se sigue
 enseñando lo anterior. Solo se aceptan identificadores que MotoGP haya dado antes
 (la temporada tiene que estar en la lista de temporadas, el GP en la de esa temporada…),
-así que la caché no puede llenarse con peticiones inventadas.
+así que la caché no puede llenarse con peticiones inventadas. Al pedir las sesiones de
+un GP se adelanta ya la petición de la clasificación de la carrera, que es la que la app
+enseña primero.
 
 ## Datos de partida (temporada 2026)
 

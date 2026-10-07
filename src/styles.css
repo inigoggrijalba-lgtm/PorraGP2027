@@ -648,6 +648,8 @@ svg { flex: none; display: block; }
 @media (max-width: 359px) {
   .hmoto { display: none; }
   .hgrid { font-size: 14px; }
+  .hgrid.c3 { font-size: 13px; letter-spacing: 0; }
+  .hgrid.c3 button { padding: 2px; }
   .stile { padding: 10px 8px; }
   .stile b { font-size: 24px; }
   .voted .vn { width: 104px; }

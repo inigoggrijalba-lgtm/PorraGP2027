@@ -6,6 +6,8 @@ const NAMES = {
   FP: ['FP', 'Libres', 'Entrenamientos libres', 'FP'],
   PR: ['Práctica', 'Práctica', 'Práctica', 'Práctica'],
   Q: ['Q', 'Clasificación Q', 'Clasificación Q', 'Q'],
+  QP: ['QP', 'Clasificación', 'Clasificación', 'QP'], // así se llamaba antes de que hubiera Q1 y Q2
+  EP: ['E-Pole', 'E-Pole', 'E-Pole', 'E-Pole'],
   SPR: ['Sprint', 'Sprint', 'Carrera Sprint', 'Sprint'],
   WUP: ['Warm up', 'Warm up', 'Warm up', 'Warm up'],
   RAC: ['Carrera', 'Carrera', 'Carrera', 'Carrera'],
