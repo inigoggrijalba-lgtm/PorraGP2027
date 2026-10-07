@@ -1,6 +1,7 @@
 // Inicio: el próximo GP, cuánto falta para que cierre el voto, el horario y cómo va la porra.
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { sessionsOf } from '../data.js';
+import { ScheduleShare } from './MotoGP.jsx';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
@@ -162,6 +163,7 @@ function ClosedState({ event, sessions, voting }) {
 
 function Schedule({ event, sessions, open }) {
   const t = useNow(30000);
+  const [sharing, setSharing] = useState(false);
   const rows = sessions.filter((s) => s.code !== 'Q2');
   if (!rows.length) return <p className="muted">MotoGP aún no ha publicado el horario de este Gran Premio.</p>;
   const nextId = rows.find((s) => Date.parse(s.starts_at) > t)?.id;
@@ -188,10 +190,18 @@ function Schedule({ event, sessions, open }) {
           );
         })}
       </div>
-      <a className="btn quiet wide" style={{ marginTop: 12 }} href={`#/horario/${event.id}`}>
-        <span>Horario completo</span>
-        <Icon name="next" size={14} stroke={2.4} />
-      </a>
+      <div className="two">
+        <button className="btn" onClick={() => setSharing(true)}>
+          <Icon name="share" />
+          <span>Compartir</span>
+        </button>
+        <a className="btn quiet" href={`#/horario/${event.id}`}>
+          <span className="wide">Horario completo</span>
+          <span className="narrow">Horario</span>
+          <Icon name="next" size={14} stroke={2.4} />
+        </a>
+      </div>
+      {sharing ? <ScheduleShare event={event} sessions={sessions} onClose={() => setSharing(false)} /> : null}
     </>
   );
 }

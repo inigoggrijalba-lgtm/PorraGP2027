@@ -97,6 +97,36 @@ async function syncPhotos(secret: string): Promise<Any> {
   }
 }
 
+// Parrillas oficiales. La base de datos dice cuáles faltan o hay que refrescar.
+async function syncGrids(secret: string): Promise<Any> {
+  try {
+    const wanted: Any[] = await rpc("sync_grid_plan", { p_secret: secret });
+    if (!wanted?.length) return null;
+    const got = await pool(wanted, 6, async (w) => {
+      const base = { event_api_uuid: w.event_api_uuid, category: w.category };
+      try {
+        const list = await api(`/results/event/${w.event_api_uuid}/category/${w.category_uuid}/grid`);
+        const rows = (Array.isArray(list) ? list : []).map((g: Any) => ({
+          pos: g.qualifying_position ?? null,
+          time: g.qualifying_time ?? null,
+          rider_uuid: g.rider?.riders_api_uuid ?? g.rider?.riders_id ?? null,
+          legacy_id: g.rider?.legacy_id ?? null,
+          full_name: g.rider?.full_name ?? null,
+          country: g.rider?.country?.iso ?? null,
+          team: g.team_name ?? null,
+        }));
+        return { ...base, rows };
+      } catch (err) {
+        // Si MotoGP no tiene esa parrilla se guarda vacía, para no pedirla en cada pasada.
+        return String(err).includes("MotoGP 404") ? { ...base, rows: [] } : null;
+      }
+    });
+    return await rpc("sync_grid_ingest", { p_secret: secret, p: { grids: got.filter(Boolean) } });
+  } catch (err) {
+    return { error: String(err) };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   const secret = req.headers.get("x-sync-secret") ?? "";
   if (!secret) return new Response("No autorizado", { status: 401 });
@@ -195,7 +225,7 @@ Deno.serve(async (req: Request) => {
       payload.errors = errors;
       rounds.push(await rpc("sync_ingest", { p_secret: secret, p: payload }));
     }
-    return Response.json({ ok: true, rounds, photos: await syncPhotos(secret) });
+    return Response.json({ ok: true, rounds, photos: await syncPhotos(secret), grids: await syncGrids(secret) });
   } catch (err) {
     const message = String(err);
     try {

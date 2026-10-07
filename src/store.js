@@ -154,6 +154,18 @@ export async function loadEvent(id, keep = false) {
   }
 }
 
+// Clasificación de una sesión y parrilla de un GP. Se guardan unos minutos mientras la app está abierta.
+const fetched = new Map();
+async function cached(key, load) {
+  const hit = fetched.get(key);
+  if (hit && Date.now() - hit.at < 5 * 60000) return hit.data;
+  const data = await load();
+  fetched.set(key, { at: Date.now(), data });
+  return data;
+}
+export const loadResult = (sessionId) => cached(`s|${sessionId}`, () => call('get_session_result', { p_session: sessionId }));
+export const loadGrid = (eventId, category) => cached(`g|${eventId}|${category}`, () => call('get_grid', { p_event: eventId, p_category: category }));
+
 function deviceLabel() {
   const ua = navigator.userAgent || '';
   if (/iPhone|iPad|iPod/.test(ua)) return 'iPhone';

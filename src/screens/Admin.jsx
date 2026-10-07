@@ -5,8 +5,8 @@ import { MAX_USES } from '../config.js';
 import { sessionsOf } from '../data.js';
 import { adminDo, adminLogin, adminLogout, adminRead, loadEvent, now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
-import { dateRange, dayMid, hm, whenText } from '../time.js';
-import { Icon, Plate, TopBar, useData, useNow } from '../ui.jsx';
+import { dayMid, hm, whenText } from '../time.js';
+import { GpNav, Icon, Plate, TopBar, useData, useNow } from '../ui.jsx';
 
 const SPRINT_POINTS = [12, 9, 7, 6, 5, 4, 3, 2, 1];
 const RACE_POINTS = [25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
@@ -53,25 +53,6 @@ function Login() {
         {busy ? 'Entrando…' : 'Entrar'}
       </button>
     </form>
-  );
-}
-
-function GpNav({ event, onMove, canPrev, canNext }) {
-  return (
-    <div className="gpnav">
-      <button className="sq" onClick={() => onMove(-1)} disabled={!canPrev} aria-label="Gran Premio anterior">
-        <Icon name="back" size={20} />
-      </button>
-      <div className="gpnav-mid">
-        <div className="gpnav-name">
-          GP {event.round} · {event.name}
-        </div>
-        <div className="small muted">{dateRange(event.date_start, event.date_end)}</div>
-      </div>
-      <button className="sq" onClick={() => onMove(1)} disabled={!canNext} aria-label="Gran Premio siguiente">
-        <Icon name="next" size={20} />
-      </button>
-    </div>
   );
 }
 

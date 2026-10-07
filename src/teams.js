@@ -1,17 +1,23 @@
 // Nombre corto y orden de los equipos. El nombre largo llega de MotoGP con el patrocinador.
 const TEAMS = [
-  [/ducati lenovo/i, 'Ducati Lenovo'],
-  [/aprilia racing/i, 'Aprilia'],
-  [/gresini/i, 'Gresini'],
-  [/ktm factory/i, 'KTM'],
-  [/vr46/i, 'VR46'],
-  [/trackhouse/i, 'Trackhouse'],
-  [/tech ?3/i, 'KTM Tech3'],
-  [/pramac/i, 'Pramac Yamaha'],
-  [/yamaha/i, 'Yamaha'],
-  [/hrc/i, 'Honda HRC'],
-  [/lcr/i, 'LCR Honda'],
+  [/ducati lenovo/i, 'Ducati Lenovo', '#D40000', '#FFFFFF'],
+  [/aprilia racing/i, 'Aprilia', '#00A651', '#0A0A0B'],
+  [/gresini/i, 'Gresini', '#75C9D9', '#0A0A0B'],
+  [/ktm factory/i, 'KTM', '#FF6600', '#0A0A0B'],
+  [/vr46/i, 'VR46', '#FDEE00', '#0A0A0B'],
+  [/trackhouse/i, 'Trackhouse', '#0B3FA8', '#FFFFFF'],
+  [/tech ?3/i, 'KTM Tech3', '#FF6600', '#0A0A0B'],
+  [/pramac/i, 'Pramac Yamaha', '#8A2BE2', '#FFFFFF'],
+  [/yamaha/i, 'Yamaha', '#0033A0', '#FFFFFF'],
+  [/hrc/i, 'Honda HRC', '#F58025', '#0A0A0B'],
+  [/lcr/i, 'LCR Honda', '#FFFFFF', '#0A0A0B'],
 ];
+
+// Color de la placa del dorsal según el nombre del equipo; gris si no es un equipo de MotoGP.
+export function teamColors(teamName) {
+  const t = TEAMS.find(([re]) => re.test(teamName || ''));
+  return t ? [t[2], t[3]] : ['#3A3A3F', '#F5F4F2'];
+}
 
 function teamIndex(name) {
   const i = TEAMS.findIndex(([re]) => re.test(name || ''));

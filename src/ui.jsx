@@ -2,7 +2,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { indexOf } from './data.js';
 import { now, setActive, useStore } from './store.js';
+import { canShareFile, download, toBlob } from './share.js';
 import { teamShort } from './teams.js';
+import { dateRange } from './time.js';
 
 const PATHS = {
   back: <path d="M15 6l-6 6 6 6" />,
@@ -38,6 +40,14 @@ const PATHS = {
       <path d="M12 15V4" />
       <path d="M8 8l4-4 4 4" />
       <path d="M5 13v6h14v-6" />
+    </>
+  ),
+  pdf: (
+    <>
+      <path d="M7 3h7l4 4v14H7z" />
+      <path d="M14 3v4h4" />
+      <path d="M10 13h5" />
+      <path d="M10 16.5h5" />
     </>
   ),
   lock: (
@@ -352,6 +362,108 @@ export function PlayerSheet({ onClose }) {
             <span>Añadir o quitar jugadores</span>
           </a>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Flechas para pasar de un GP a otro.
+export function GpNav({ event, onMove, canPrev, canNext, sub }) {
+  return (
+    <div className="gpnav">
+      <button className="sq" onClick={() => onMove(-1)} disabled={!canPrev} aria-label="Gran Premio anterior">
+        <Icon name="back" size={20} />
+      </button>
+      <div className="gpnav-mid">
+        <div className="gpnav-name">
+          GP {event.round} · {event.name}
+        </div>
+        <div className="small muted">{sub || dateRange(event.date_start, event.date_end)}</div>
+      </div>
+      <button className="sq" onClick={() => onMove(1)} disabled={!canNext} aria-label="Gran Premio siguiente">
+        <Icon name="next" size={20} />
+      </button>
+    </div>
+  );
+}
+
+// Vista previa de una imagen generada, con los botones para enviarla o guardarla.
+export function ShareSheet({ title, name, make, onClose }) {
+  const [state, setState] = useState({ status: 'working' });
+  const [note, setNote] = useState('');
+  useEffect(() => {
+    let alive = true;
+    let url = null;
+    (async () => {
+      try {
+        const canvas = await make();
+        const blob = await toBlob(canvas);
+        const file = new File([blob], name, { type: 'image/png' });
+        url = URL.createObjectURL(blob);
+        if (alive) setState({ status: 'ready', blob, file, url, shareable: canShareFile(file) });
+      } catch {
+        if (alive) setState({ status: 'error' });
+      }
+    })();
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => {
+      alive = false;
+      window.removeEventListener('keydown', onKey);
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, []);
+  const share = async () => {
+    try {
+      await navigator.share({ files: [state.file], title });
+      onClose();
+    } catch (e) {
+      // AbortError: el jugador ha cerrado el menú sin enviar
+      if (!e || e.name !== 'AbortError') setNote('No se ha abierto el menú de compartir. Guarda la imagen y envíala desde la galería.');
+    }
+  };
+  return (
+    <div className="scrim" onClick={onClose}>
+      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-kerb" />
+        <div className="sheet-head">
+          <h2 className="h2">{title}</h2>
+          <button className="back" onClick={onClose} aria-label="Cerrar">
+            <Icon name="close" size={20} />
+          </button>
+        </div>
+        {state.status === 'ready' ? (
+          <>
+            <div className="share-prev">
+              <img src={state.url} alt={`Imagen para compartir: ${title}`} />
+            </div>
+            <div className="stack" style={{ marginTop: 12 }}>
+              {state.shareable ? (
+                <button className="cta m" onClick={share}>
+                  <Icon name="share" size={18} />
+                  <span>Enviar al grupo</span>
+                </button>
+              ) : null}
+              <button className={state.shareable ? 'btn quiet wide' : 'cta m'} onClick={() => download(state.blob, name)}>
+                Guardar imagen
+              </button>
+              {note ? (
+                <p className="small muted" role="status">
+                  {note}
+                </p>
+              ) : null}
+            </div>
+          </>
+        ) : state.status === 'error' ? (
+          <p className="err-text" role="alert" style={{ padding: '12px 0 20px' }}>
+            No se ha podido crear la imagen. Vuelve a intentarlo.
+          </p>
+        ) : (
+          <div className="center-fill" style={{ padding: '48px 0' }} role="status" aria-label="Creando la imagen">
+            <div className="pulse" />
+            <div className="muted">Creando la imagen…</div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { ErrorScreen, Join, Loading, PickPlayers, Setup } from './screens/Gate.j
 import Home from './screens/Home.jsx';
 import Admin from './screens/Admin.jsx';
 import { Install, More, Players, Rules } from './screens/More.jsx';
-import { Calendar, FullSchedule } from './screens/MotoGP.jsx';
+import { Calendar, FullSchedule, Results } from './screens/MotoGP.jsx';
 import Porra from './screens/Porra.jsx';
 import Vote from './screens/Vote.jsx';
 import { init, now, refresh, useStore } from './store.js';
@@ -33,7 +33,7 @@ function Ready() {
   const d = indexOf(boot);
   const voting = d.events.get(boot.voting_event_id);
   const voteDot = !!voting && Date.parse(voting.close_at) > now() && !d.voteOf(active, voting.id);
-  const [a, b] = route;
+  const [a, b, c] = route;
 
   let tab = '';
   let screen;
@@ -45,7 +45,7 @@ function Ready() {
     screen = <Porra tab={b === 'gp' ? 'gp' : 'general'} />;
   } else if (a === 'motogp') {
     tab = 'motogp';
-    screen = <Calendar />;
+    screen = b === 'calendario' ? <Calendar /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
   } else if (a === 'horario') {
     tab = cameFrom() === 'motogp' ? 'motogp' : '';
     screen = <FullSchedule eventId={b} />;

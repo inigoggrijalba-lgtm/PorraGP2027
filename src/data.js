@@ -9,6 +9,7 @@ export function indexOf(boot) {
   if (boot === lastBoot) return lastIndex;
   const players = new Map(boot.players.map((p) => [p.id, p]));
   const riders = new Map(boot.riders.map((r) => [r.id, r]));
+  const byApi = new Map(boot.riders.filter((r) => r.api_uuid).map((r) => [r.api_uuid, r])); // por identificador de MotoGP
   const events = new Map(boot.events.map((e) => [e.id, e]));
   const votes = new Map(); // "jugador|gp" -> voto
   for (const v of boot.votes) votes.set(`${v.player_id}|${v.event_id}`, v);
@@ -19,6 +20,7 @@ export function indexOf(boot) {
   lastIndex = {
     players,
     riders,
+    byApi,
     events,
     rounds: boot.events.length,
     activePlayers: boot.players.filter((p) => p.active),

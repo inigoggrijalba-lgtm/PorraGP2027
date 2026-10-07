@@ -8,7 +8,7 @@ política, así que no hay acceso directo.
 Las migraciones aplicadas están en el historial del propio proyecto de Supabase:
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
-`006_fotos_pilotos_y_panel_admin`.
+`006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`.
 
 ## Tablas (`porra.*`)
 
@@ -19,6 +19,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 | `riders` | Pilotos por temporada: nombre, dorsal, equipo, colores, `votable` |
 | `events` | Grandes premios: ronda, zona horaria del circuito, `sprint_at` (cierre del voto), `race_at`, `close_override` |
 | `sessions` | Sesiones de cada GP (MotoGP, Moto2, Moto3) con su clasificación y los PDF |
+| `grids` | Parrilla oficial de cada GP y categoría (posición y tiempo de clasificación) |
 | `rider_points` | Posición y puntos de cada piloto en Sprint y carrera |
 | `votes` | Un voto por jugador y GP; `changes_used` cuenta el cambio permitido |
 | `scores` | Puntos de cada jugador por GP (`calc`, `hoja` o `manual`) |
@@ -31,7 +32,8 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 Acceso: `porra_status`, `setup_porra` (solo la primera vez), `join_device`,
 `set_device_player`, `admin_login`, `admin_logout`.
 
-Lectura: `get_bootstrap`, `get_event`, `get_session_result`, `get_standings`.
+Lectura: `get_bootstrap`, `get_event`, `get_session_result` (clasificación de una
+sesión), `get_grid` (parrilla de un GP y categoría), `get_standings`.
 
 Voto: `cast_vote(p_token, p_player, p_event, p_rider)`.
 
@@ -70,6 +72,9 @@ Cada 5 minutos, `pg_cron` llama a la función `sync-motogp`
 5. Fotos de los pilotos: una vez al día se pide la lista de equipos de MotoGP y se
    guarda la foto de cada piloto (`riders.photo_url`). La app no carga la foto original
    (cuerpo entero, varios megas): la pide recortada y reducida a través de `wsrv.nl`.
+
+6. Parrillas: 20 minutos después de cada Q2 se pide la parrilla oficial y se refresca
+   cada media hora hasta la carrera, por si hay sanciones.
 
 Los puntos metidos a mano por el administrador (`rider_points.manual`) no los pisa la
 sincronización.
