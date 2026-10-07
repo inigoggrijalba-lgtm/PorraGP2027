@@ -1,7 +1,7 @@
 // Más › Histórico: cualquier clasificación del Mundial. Temporada → categoría → gran premio → sesión.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { catName, catRank, catSlug, gpLabel, gpTitle, oldDate, oldTime, slugRank, sortCats } from '../history.js';
-import { chipName, conditionText, fullName, isRace } from '../results.js';
+import { catName, catRank, catSlug, gpLabel, gpTitle, oldDate, slugRank, sortCats } from '../history.js';
+import { chipName, conditionText, fullName, isRace, rowTimes } from '../results.js';
 import { resultImage } from '../share.js';
 import { loadHistory } from '../store.js';
 import { Icon, Offline, ShareSheet, TopBar, useData } from '../ui.jsx';
@@ -147,7 +147,7 @@ export default function History() {
   const title = event ? gpTitle(event, year) : '';
   const cond = session ? conditionText(session.condition) : '';
   const pdf = (res.data && res.data.result.file) || (session && session.files && session.files.classification) || null;
-  const blanks = race && rows.some((r) => r.pos > 1 && !oldTime(r, true));
+  const blanks = race && rows.some((r, i) => r.pos > 1 && !rowTimes(rows, i, true).main);
 
   return (
     <>
@@ -293,6 +293,7 @@ export default function History() {
               ) : (
                 rows.map((row, i) => {
                   const first = row.pos === 1;
+                  const t = rowTimes(rows, i, race);
                   return (
                     <div className="hrow" key={i}>
                       <div className={`rpos ${first ? 'first' : ''}`}>{row.pos ?? '–'}</div>
@@ -301,7 +302,10 @@ export default function History() {
                         {row.country ? <small>{row.country}</small> : null}
                       </div>
                       <div className="hmoto">{typeof row.constructor === 'string' ? row.constructor : ''}</div>
-                      <div className={`rtime ${first ? 'first' : ''}`}>{oldTime(row, race)}</div>
+                      <div className={`rtime ${first ? 'first' : ''}`}>
+                        <span>{t.main}</span>
+                        {t.sub ? <small>{t.sub}</small> : null}
+                      </div>
                       {withPoints ? <div className="rpts">{row.points || ''}</div> : null}
                     </div>
                   );
@@ -310,7 +314,7 @@ export default function History() {
             </div>
             {rows.length ? (
               <p className="small muted" style={{ padding: '12px 0 0' }}>
-                {blanks ? 'De esta carrera solo se conservan los tiempos de los primeros. ' : ''}
+                {blanks ? 'De esta carrera solo se conservan los tiempos de los primeros. ' : rows.length > 1 ? 'Debajo de cada tiempo: diferencia con el primero / con el de delante. ' : ''}
                 Datos oficiales de MotoGP.
               </p>
             ) : null}

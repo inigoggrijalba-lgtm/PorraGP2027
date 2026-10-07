@@ -1,7 +1,7 @@
 // Pestaña MotoGP: resultados de cada sesión, calendario de la temporada y horario completo.
 import { useEffect, useRef, useState } from 'react';
 import { sessionsOf } from '../data.js';
-import { chipName, conditionText, fileList, isRace, rowRider, rowTime, titleName } from '../results.js';
+import { chipName, conditionText, fileList, isRace, rowRider, rowTimes, titleName } from '../results.js';
 import { gridImage, resultImage, scheduleImage } from '../share.js';
 import { loadEvent, loadGrid, loadResult, now } from '../store.js';
 import { dateRange, dayKey, dayLong, dayMidCap, hm } from '../time.js';
@@ -26,7 +26,7 @@ export function Tabs({ current }) {
 }
 
 // Fila de una clasificación o de la parrilla.
-function Row({ pos, first, rider, time, points }) {
+function Row({ pos, first, rider, time, sub, points }) {
   return (
     <div className="rrow">
       <div className={`rpos ${first ? 'first' : ''}`}>{pos}</div>
@@ -37,7 +37,10 @@ function Row({ pos, first, rider, time, points }) {
         <span>{rider.short}</span>
         <small>{rider.moto}</small>
       </div>
-      <div className={`rtime ${first ? 'first' : ''}`}>{time}</div>
+      <div className={`rtime ${first ? 'first' : ''}`}>
+        <span>{time}</span>
+        {sub ? <small>{sub}</small> : null}
+      </div>
       {points === undefined ? null : <div className="rpts">{points || ''}</div>}
     </div>
   );
@@ -138,8 +141,16 @@ function SessionView({ event, session }) {
             No se ha podido cargar la clasificación. Comprueba la conexión.
           </p>
         ) : (
-          rows.map((row, i) => <Row key={i} pos={row.pos == null ? '–' : row.pos} first={row.pos === 1} rider={rowRider(row, d, session.category)} time={rowTime(row, race)} points={race ? row.points : undefined} />)
+          rows.map((row, i) => {
+            const t = rowTimes(rows, i, race);
+            return <Row key={i} pos={row.pos == null ? '–' : row.pos} first={row.pos === 1} rider={rowRider(row, d, session.category)} time={t.main} sub={t.sub} points={race ? row.points : undefined} />;
+          })
         )}
+        {rows.length > 1 && status === 'ready' ? (
+          <p className="small muted" style={{ padding: '10px 0 0' }}>
+            Debajo de cada tiempo: diferencia con el primero / con el de delante.
+          </p>
+        ) : null}
       </div>
       <Files files={files} except="classification" />
       {sharing ? (

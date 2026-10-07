@@ -512,7 +512,7 @@ svg { flex: none; display: block; }
 .schips button.wait { color: var(--text3); }
 .schips button[aria-pressed='true'] { background: var(--red); border-color: var(--red); color: #fff; }
 .rlist { margin: 16px 20px 0; border-top: 1px solid var(--line); }
-.rrow { min-height: 44px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+.rrow { min-height: 48px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
 .rpos { width: 24px; flex: none; text-align: right; font-family: var(--display); font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; }
 .rpos.first { color: var(--red-text); }
 .plate.rp { width: 36px; height: 22px; font-size: 12px; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
@@ -521,6 +521,10 @@ svg { flex: none; display: block; }
 .rname small { flex: none; font-size: 12px; color: var(--text2); white-space: nowrap; }
 .rtime { flex: none; font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--text2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rtime.first { color: var(--text); }
+.rtime { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; line-height: 1.1; }
+.rtime span { color: var(--text); }
+.rtime small { font-weight: 500; font-size: 11px; letter-spacing: 0.02em; color: var(--text2); }
+.rtime span:only-child { color: inherit; }
 .rpts { width: 24px; flex: none; text-align: right; font-family: var(--display); font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
 .share-prev { max-height: 56dvh; overflow-y: auto; border: 1px solid var(--line); background: #000; }
 .share-prev img { display: block; width: 100%; height: auto; }
@@ -639,7 +643,7 @@ svg { flex: none; display: block; }
 .hbtn.red { background: var(--red); border-color: var(--red); color: #fff; }
 .hbtn:disabled { background: var(--line); border-color: var(--line); color: var(--text3); }
 .hrows { margin-top: 14px; border-top: 1px solid var(--line); }
-.hrow { min-height: 44px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+.hrow { min-height: 48px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
 .hname { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
 .hname span { font-family: var(--cond); font-weight: 600; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hname small { flex: none; font-size: 12px; color: var(--text2); }

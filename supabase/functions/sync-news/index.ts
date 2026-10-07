@@ -175,6 +175,8 @@ async function coverOf(url: string): Promise<string | null> {
 
 const used: Record<string, number> = {};
 const down: Record<string, string> = {};
+// Correo de contacto para MyMemory: con él da diez veces más cupo diario. Llega de la base de datos.
+let contact = "";
 
 async function viaGoogle(q: string, from: string): Promise<string | null> {
   const u = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=es&dt=t&q=${encodeURIComponent(q)}`;
@@ -185,7 +187,7 @@ async function viaGoogle(q: string, from: string): Promise<string | null> {
   return text || null;
 }
 async function viaMyMemory(q: string, from: string): Promise<string | null> {
-  const u = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(q.slice(0, 450))}&langpair=${from}|es`;
+  const u = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(q.slice(0, 450))}&langpair=${from}|es${contact ? `&de=${encodeURIComponent(contact)}` : ""}`;
   const r = await fetch(u, { signal: AbortSignal.timeout(8000) });
   if (!r.ok) throw new Error(String(r.status));
   const j = await r.json();
@@ -224,6 +226,7 @@ Deno.serve(async (req: Request) => {
   try {
     const plan = await rpc("news_plan", { p_secret: secret });
     const known = new Set<string>(plan.known ?? []);
+    contact = typeof plan.contact === "string" ? plan.contact : "";
     const since = Date.now() - 21 * 86400e3;
 
     const feeds: Record<string, number | string> = {};

@@ -9,7 +9,7 @@ Las migraciones aplicadas están en el historial del propio proyecto de Supabase
 `001_esquema_porra`, `002_funciones_acceso_y_voto`, `003_carga_temporada_2026`,
 `004_sincronizacion_motogp`, `005_cierres_y_puntos_desde_endpoint`,
 `006_fotos_pilotos_y_panel_admin`, `007_parrillas_y_resultados`, `008_pilotos_y_avisos`,
-`009_historico`, `010_historico_adelanta_carrera`, `011_noticias` a `014_noticias_…`.
+`009_historico`, `010_historico_adelanta_carrera`, `011_noticias` a `015_noticias_…`.
 
 ## Tablas (`porra.*`)
 
@@ -150,8 +150,9 @@ el enlace; el texto se lee en la web del medio. Si el RSS no trae imagen (Motosa
 se toma la portada que declara la propia noticia (`og:image`).
 
 Los titulares en inglés se traducen con un servicio gratuito (MyMemory; antes se intenta
-el de Google, que hoy rechaza las peticiones desde servidores). El cupo gratuito es
-limitado, así que primero van los titulares y después, si queda, la entradilla de la
+el de Google, que hoy rechaza las peticiones desde servidores). MyMemory da más cupo
+diario si se le indica un correo de contacto: está en `config.news_contact`, no en el
+código. Aun así el cupo es limitado, así que primero van los titulares y después, si queda, la entradilla de la
 noticia más reciente de cada medio. Lo que no se llega a traducir se guarda en inglés y se
 reintenta en las siguientes pasadas (`news_plan` dice qué falta). El resultado de la
 última pasada queda en `config.news_status`.

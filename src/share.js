@@ -1,7 +1,7 @@
 // Imágenes para compartir en el grupo: clasificación, parrilla y horario.
 // Se pintan en la propia app, a 1080 px de ancho, con los colores y tipografías de la porra.
-import { bigName, conditionText, fullName, isRace, rowRider, rowTime, titleName } from './results.js';
-import { oldRider, oldTime } from './history.js';
+import { bigName, conditionText, fullName, isRace, rowRider, rowTimes, titleName } from './results.js';
+import { oldRider } from './history.js';
 import { dateRange, dayKey, hm } from './time.js';
 
 const W = 1080;
@@ -128,7 +128,7 @@ function header(ctx, { label, title, titleSize, sub, rightTop, rightSub }) {
 }
 
 function footer(ctx, height, left, right = 'Datos oficiales de MotoGP') {
-  if (left) text(ctx, left, PAD, height - 46, { font: F(400, 24, BODY), color: C.text2 });
+  if (left) text(ctx, left, PAD, height - 46, { font: F(400, 24, BODY), color: C.text2, maxWidth: W - 2 * PAD - 310 });
   text(ctx, right, W - PAD, height - 46, { font: F(400, 24, BODY), color: C.text2, align: 'right' });
 }
 
@@ -138,10 +138,10 @@ export async function resultImage({ event, session, rows, d, old = false }) {
   const race = isRace(session.code);
   // En el histórico no hay equipos de hoy ni dorsales antiguos, y los puntos solo salen si los hubo.
   const riderOf = (row) => (old ? oldRider(row) : rowRider(row, d, session.category));
-  const timeOf = (row) => (old ? oldTime(row, race) : rowTime(row, race));
   const withPoints = race && (!old || rows.some((r) => r.points > 0));
   const withPlates = !old || rows.some((r) => r.number != null && r.number !== '');
-  const rowH = 52;
+  // Cada fila lleva dos líneas de tiempo: el del piloto y, debajo, sus dos diferencias.
+  const rowH = 64;
   const top = 302;
   const { canvas, ctx } = canvasOf(top + rows.length * rowH + 82);
   const bottom = header(ctx, {
@@ -155,9 +155,10 @@ export async function resultImage({ event, session, rows, d, old = false }) {
   kerb(ctx, bottom + 24);
   let y = bottom + 24 + 14 + 16;
   const nameX = withPlates ? PAD + 186 : PAD + 84;
-  rows.forEach((row) => {
+  rows.forEach((row, i) => {
     const r = riderOf(row);
-    const mid = y + 25;
+    const t = rowTimes(rows, i, race);
+    const mid = y + 31;
     const first = row.pos === 1;
     text(ctx, row.pos == null ? '–' : String(row.pos), PAD + 58, mid + 11, { font: F(800, 30, DISPLAY), color: first ? C.redText : C.text, align: 'right' });
     if (withPlates && r.number !== '' && r.number != null) plate(ctx, PAD + 80, mid - 19, 84, 38, 10, r.color, r.ink, r.number, 24);
@@ -165,12 +166,15 @@ export async function resultImage({ event, session, rows, d, old = false }) {
     text(ctx, r.moto, 642, mid + 9, { font: F(400, 26, BODY), color: C.text2, maxWidth: withPoints ? 118 : 150 });
     // En Sprint y carrera, a la derecha del todo, los puntos que da cada piloto en la porra.
     const timeRight = withPoints ? W - PAD - 78 : W - PAD;
-    text(ctx, timeOf(row), timeRight, mid + 10, { font: F(700, 29, DISPLAY), color: first ? C.text : C.text2, align: 'right', maxWidth: withPoints ? 196 : 222 });
+    const timeWidth = withPoints ? 196 : 222;
+    text(ctx, t.main, timeRight, t.sub ? mid - 1 : mid + 10, { font: F(700, 29, DISPLAY), color: first || t.sub ? C.text : C.text2, align: 'right', maxWidth: timeWidth });
+    if (t.sub) text(ctx, t.sub, timeRight, mid + 24, { font: F(500, 20, DISPLAY), color: C.text2, align: 'right', maxWidth: timeWidth });
     if (withPoints) text(ctx, row.points ? String(row.points) : '', W - PAD, mid + 10, { font: F(800, 29, DISPLAY), color: C.redText, align: 'right', maxWidth: 62 });
-    hline(ctx, y + 50);
+    hline(ctx, y + rowH - 2);
     y += rowH;
   });
-  footer(ctx, canvas.height, !race ? 'Mejor vuelta y diferencia con el primero' : withPoints ? 'Diferencia con el ganador · en rojo, los puntos' : 'Diferencia con el ganador');
+  const below = 'Debajo: diferencia con el 1.º / con el de delante';
+  footer(ctx, canvas.height, !race ? `Mejor vuelta · ${below[0].toLowerCase()}${below.slice(1)}` : withPoints ? `${below} · en rojo, los puntos` : below);
   return canvas;
 }
 

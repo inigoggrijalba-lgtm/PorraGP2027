@@ -82,18 +82,40 @@ const OUT = {
   OUTOFTIME: 'Fuera de tiempo',
 };
 
-// Lo que va en la columna de tiempo: el tiempo del primero y la diferencia de los demás.
-export function rowTime(row, race) {
+// 114.8 s -> "1:54.800"
+function gapText(seconds) {
+  if (seconds < 60) return seconds.toFixed(3);
+  const m = Math.floor(seconds / 60);
+  return `${m}:${(seconds - m * 60).toFixed(3).padStart(6, '0')}`;
+}
+
+// Columna de tiempo de una fila: arriba el tiempo del piloto y debajo lo que pierde con el primero
+// y con el que lleva delante ("+0.243/+0.063"). El primero no lleva segunda línea.
+export function rowTimes(rows, i, race) {
+  const row = rows[i];
+  const own = lapTime(row.time);
+  const gap = Number(row.gap || 0);
+  // Diferencia con el anterior: los dos tiempos se miden contra el primero, así que basta restarlos.
+  const ahead = (ok) => {
+    const prev = i > 0 ? rows[i - 1] : null;
+    if (!prev || !ok(prev)) return '';
+    const d = gap - (prev.pos === 1 ? 0 : Number(prev.gap || 0));
+    return d >= 0 ? `/+${gapText(d)}` : '';
+  };
   if (race) {
-    if (row.pos == null) return OUT[row.status] || 'No terminó';
-    if (row.pos === 1) return lapTime(row.time);
+    if (row.pos == null) return { main: OUT[row.status] || 'No terminó', sub: '' };
+    if (row.pos === 1) return { main: own, sub: '' };
     const laps = Number(row.gap_lap || 0);
-    if (laps > 0) return `+${laps} ${laps === 1 ? 'vuelta' : 'vueltas'}`;
-    return row.gap ? `+${row.gap}` : lapTime(row.time);
+    if (laps > 0) return { main: own || `+${laps} ${laps === 1 ? 'vuelta' : 'vueltas'}`, sub: own ? `+${laps} ${laps === 1 ? 'vuelta' : 'vueltas'}` : '' };
+    if (!(gap > 0)) return { main: own, sub: '' };
+    const first = `+${gapText(gap)}`;
+    // De muchas carreras antiguas no se guardó el tiempo de cada piloto, solo la diferencia.
+    if (!own) return { main: first, sub: '' };
+    return { main: own, sub: first + ahead((p) => p.pos != null && Number(p.gap_lap || 0) === 0 && (p.pos === 1 || Number(p.gap || 0) > 0)) };
   }
-  if (!row.time) return 'Sin tiempo';
-  if (row.pos === 1 || !row.gap || Number(row.gap) === 0) return lapTime(row.time);
-  return `+${row.gap}`;
+  if (!row.time) return { main: 'Sin tiempo', sub: '' };
+  if (row.pos === 1 || !(gap > 0)) return { main: own, sub: '' };
+  return { main: own, sub: `+${gapText(gap)}` + ahead((p) => !!p.time) };
 }
 
 // Nombre, moto y colores de una fila. Los pilotos de MotoGP de la porra salen con su nombre de siempre.

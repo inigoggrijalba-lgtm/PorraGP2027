@@ -1,5 +1,4 @@
-// Histórico: nombres en castellano, orden de las categorías y lectura de las clasificaciones antiguas.
-import { lapTime, rowTime } from './results.js';
+// Histórico: nombres en castellano, orden de las categorías y pilotos de las clasificaciones antiguas.
 
 // MotoGP identifica cada gran premio con unas siglas que no cambian de un año a otro.
 const GP = {
@@ -61,32 +60,6 @@ export function oldDate(value) {
   const t = new Date(value);
   if (Number.isNaN(t.getTime())) return '';
   return `${t.getUTCDate()} ${MONTHS[t.getUTCMonth()]} ${t.getUTCFullYear()}`;
-}
-
-const OUT = {
-  OUTSTND: 'No terminó',
-  NOTFINISHFIRST: 'No terminó',
-  NOTSTARTED: 'No salió',
-  NOTONRESTARTGRID: 'No salió',
-  DISQUALIFIED: 'Descalificado',
-  OUTOFLAPS: 'Sin clasificar',
-  OUTOFTIME: 'Fuera de tiempo',
-};
-// 114.8 s -> "1:54.800"
-function gapText(seconds) {
-  if (seconds < 60) return seconds.toFixed(3);
-  const m = Math.floor(seconds / 60);
-  return `${m}:${(seconds - m * 60).toFixed(3).padStart(6, '0')}`;
-}
-// De muchas carreras antiguas solo se guardó el tiempo de los primeros: el resto se queda en blanco.
-export function oldTime(row, race) {
-  if (!race) return rowTime(row, false);
-  if (row.pos == null) return OUT[row.status] || 'No terminó';
-  if (row.pos === 1) return lapTime(row.time);
-  const laps = Number(row.gap_lap || 0);
-  if (laps > 0) return `+${laps} ${laps === 1 ? 'vuelta' : 'vueltas'}`;
-  const gap = Number(row.gap || 0);
-  return gap > 0 ? `+${gapText(gap)}` : '';
 }
 
 // En el histórico no se usan los colores de los equipos de hoy: un piloto de 2019 no corría donde corre ahora.
