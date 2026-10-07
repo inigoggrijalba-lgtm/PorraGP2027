@@ -305,10 +305,10 @@ export function Install() {
   }, []);
   const url = window.location.href.split('#')[0];
   const share = async () => {
-    const text = 'PorraGP: entra, instálala y vota antes de la Sprint.';
+    const text = 'PorraGP27: entra, instálala y vota antes de la Sprint.';
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'PorraGP', text, url });
+        await navigator.share({ title: 'PorraGP27', text, url });
       } else {
         await navigator.clipboard.writeText(url);
         setNote('Enlace copiado. Pégalo en el grupo.');
