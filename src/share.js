@@ -3,6 +3,7 @@
 import { bigName, conditionText, fullName, isRace, rowRider, rowTimes, titleName } from './results.js';
 import { families } from './fonts.js';
 import { oldRider } from './history.js';
+import { teamColors } from './teams.js';
 import { dateRange, dayKey, hm } from './time.js';
 
 const W = 1080;
@@ -278,6 +279,92 @@ export async function scheduleImage({ event, sessions, rounds, voteOpen }) {
     text(ctx, `antes del ${weekday(event.close_at)} a las ${hm(event.close_at)}`, W - PAD - 48, y + 65, { font: F(600, 38, COND), color: '#FFFFFF', align: 'right', maxWidth: W - 2 * PAD - 96 - used - 24 });
   }
   footer(ctx, canvas.height, `Ronda ${event.round} de ${rounds}`);
+  return canvas;
+}
+
+// Campeón de la temporada: cabecera "CAMPEÓN", el trofeo, sus datos y el resto del podio.
+const GOLD = '#E8B84A';
+const TROPHY = 'M30 8h60v10h22c0 26-10 40-28 44-4 10-11 17-19 20v18h18v12H37v-12h18V82c-8-3-15-10-19-20C18 58 8 44 8 18h22zm0 22H20c2 14 7 21 13 24-2-7-3-15-3-24zm60 0c0 9-1 17-3 24 6-3 11-10 13-24zM30 124h64v12H30z';
+export async function championImage({ champ }) {
+  await fonts();
+  const H = 1350;
+  const { canvas, ctx } = canvasOf(H);
+  // Resplandor dorado detrás del trofeo
+  const glow = ctx.createRadialGradient(W / 2, 500, 20, W / 2, 500, 560);
+  glow.addColorStop(0, '#3A2A0C');
+  glow.addColorStop(1, C.bg);
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  text(ctx, upper(`Porra MotoGP · Temporada ${champ.season}`), PAD, 100, { font: F(600, 30, COND), color: C.text2, spacing: 4 });
+  text(ctx, 'CAMPEÓN', PAD, 238, { font: F(900, 150, TITLE), spacing: 1, maxWidth: W - 2 * PAD - 220 });
+  ctx.font = `800 40px ${TITLE}`;
+  const gp = ctx.measureText('GP').width;
+  text(ctx, 'GP', W - PAD, 104, { font: F(800, 40, TITLE), color: C.redText, align: 'right' });
+  text(ctx, 'Porra', W - PAD - gp, 104, { font: F(800, 40, TITLE), align: 'right' });
+  kerb(ctx, 276);
+
+  // Trofeo: el dibujo mide 120×140 y se pinta a 230 px de alto.
+  const scale = 230 / 140;
+  ctx.save();
+  ctx.translate(W / 2 - 60 * scale, 334);
+  ctx.scale(scale, scale);
+  ctx.shadowColor = 'rgba(232,184,74,0.55)';
+  ctx.shadowBlur = 40;
+  ctx.fillStyle = GOLD;
+  ctx.fill(new Path2D(TROPHY));
+  ctx.restore();
+
+  text(ctx, String(champ.season), W / 2, 652, { font: F(900, 56, TITLE), color: GOLD, align: 'center', spacing: 14 });
+  text(ctx, upper(champ.name), W / 2, 800, { font: F(900, 160, TITLE), align: 'center', maxWidth: W - 2 * PAD });
+  text(ctx, upper(`${champ.rounds} grandes premios · ${champ.players} jugadores`), W / 2, 860, { font: F(600, 30, COND), color: C.text2, align: 'center', spacing: 5 });
+
+  // Cuatro datos del campeón
+  const gap = 14;
+  const tw = (W - 2 * PAD - 3 * gap) / 4;
+  const ty = 910;
+  const th = 150;
+  const tiles = [
+    [String(champ.total), 'Puntos', GOLD],
+    [String(champ.wins), champ.wins === 1 ? 'GP ganado' : 'GP ganados', C.text],
+    [`+${champ.margin}`, 'Sobre el 2.º', C.text],
+    [null, 'Su piloto fetiche', C.text],
+  ];
+  tiles.forEach(([value, label, color], i) => {
+    const x = PAD + i * (tw + gap);
+    ctx.fillStyle = '#151517';
+    ctx.fillRect(x, ty, tw, th);
+    ctx.strokeStyle = C.line;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x + 1, ty + 1, tw - 2, th - 2);
+    if (value != null) text(ctx, value, x + tw / 2, ty + 84, { font: F(800, 60, DISPLAY), color, align: 'center', maxWidth: tw - 20 });
+    else if (champ.rider) {
+      const r = champ.rider;
+      const [bg, ink] = r.team_color ? [r.team_color, r.text_color || '#F5F4F2'] : teamColors(r.team_name);
+      plate(ctx, x + tw / 2 - 52, ty + 30, 104, 60, 12, bg, ink, r.number, 36);
+    } else text(ctx, '–', x + tw / 2, ty + 84, { font: F(800, 60, DISPLAY), color, align: 'center' });
+    text(ctx, upper(label), x + tw / 2, ty + 126, { font: F(600, 22, COND), color: C.text2, align: 'center', spacing: 2, maxWidth: tw - 16 });
+  });
+
+  // Segundo y tercero
+  const py = 1090;
+  const ph = 112;
+  const pw = (W - 2 * PAD - gap) / 2;
+  [
+    [champ.podium[1], '2', '#B4B3AF'],
+    [champ.podium[2], '3', '#A0622D'],
+  ].forEach(([p, n, color], i) => {
+    if (!p) return;
+    const x = PAD + i * (pw + gap);
+    ctx.fillStyle = '#151517';
+    ctx.fillRect(x, py, pw, ph);
+    plate(ctx, x + 20, py + 22, 90, ph - 44, 12, color, '#0A0A0B', n, 44);
+    text(ctx, p.name, x + 130, py + 66, { font: F(600, 42, COND), maxWidth: pw - 130 - 130 });
+    text(ctx, `${p.total}`, x + pw - 70, py + 70, { font: F(800, 40, DISPLAY), align: 'right' });
+    text(ctx, 'pts', x + pw - 22, py + 70, { font: F(500, 24, DISPLAY), color: C.text2, align: 'right' });
+  });
+
+  footer(ctx, H, `¡Enhorabuena, ${champ.name}!`, 'porragp27');
   return canvas;
 }
 

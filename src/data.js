@@ -53,3 +53,39 @@ export function sessionsOf(eventData, event, category) {
 }
 
 export const ordinal = (n) => `${n}.º`;
+
+// Fin de temporada: el campeón, el podio y sus datos. Nada hasta que se haya corrido el último GP.
+export function championOf(d, standings, season) {
+  const list = standings.filter((s) => s.active);
+  if (!d.rounds || d.finishedCount < d.rounds || list.length < 2) return null;
+  const finished = [...d.events.values()].filter((e) => e.status === 'finished');
+  const champ = list[0];
+  // GP ganados: los que cerró con más puntos que nadie (si empata, cuenta para todos los empatados).
+  let wins = 0;
+  for (const e of finished) {
+    const best = Math.max(0, ...list.map((s) => d.scoreOf(s.player_id, e.id)?.total || 0));
+    if (best > 0 && (d.scoreOf(champ.player_id, e.id)?.total || 0) === best) wins += 1;
+  }
+  // Piloto fetiche: el que más veces votó; si hay empate, con el que sumó más puntos.
+  const tally = new Map();
+  for (const e of finished) {
+    const v = d.voteOf(champ.player_id, e.id);
+    if (!v) continue;
+    const t = tally.get(v.rider_id) || { n: 0, pts: 0 };
+    t.n += 1;
+    t.pts += d.scoreOf(champ.player_id, e.id)?.total || 0;
+    tally.set(v.rider_id, t);
+  }
+  const fav = [...tally.entries()].sort((a, b) => b[1].n - a[1].n || b[1].pts - a[1].pts)[0];
+  return {
+    season,
+    rounds: d.rounds,
+    players: list.length,
+    name: champ.name,
+    total: champ.total,
+    wins,
+    margin: champ.total - list[1].total,
+    rider: fav ? d.riders.get(fav[0]) || null : null,
+    podium: list.slice(0, 3).map((s) => ({ name: s.name, total: s.total })),
+  };
+}

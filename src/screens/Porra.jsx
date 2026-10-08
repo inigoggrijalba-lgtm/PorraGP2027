@@ -1,7 +1,8 @@
 // Pestaña Porra: clasificación general, votos y puntos de cada GP, y estadísticas.
 import { useEffect, useRef, useState } from 'react';
 import { now } from '../store.js';
-import { Offline, Plate, TopBar, useData } from '../ui.jsx';
+import { championOf } from '../data.js';
+import { ChampionCard, Offline, Plate, TopBar, useData } from '../ui.jsx';
 import Stats from './Stats.jsx';
 
 function Tabs({ current }) {
@@ -21,12 +22,14 @@ function Tabs({ current }) {
 }
 
 function General() {
-  const { d, standings, active } = useData();
+  const { d, standings, active, boot } = useData();
   const list = standings.filter((s) => s.active);
   const lead = list.length ? list[0].total : 0;
   const last = d.lastFinished;
+  const champ = championOf(d, standings, boot.season);
   return (
     <>
+      {champ ? <ChampionCard champ={champ} /> : null}
       <div className="page-head" style={{ paddingBottom: 12, gap: 4 }}>
         <h1 className="h1" style={{ fontSize: 24 }}>
           Clasificación general

@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { indexOf } from './data.js';
 import { now, setActive, useStore } from './store.js';
-import { canShareFile, download, toBlob } from './share.js';
+import { canShareFile, championImage, download, toBlob } from './share.js';
 import { teamColors, teamShort } from './teams.js';
 import { dateRange } from './time.js';
 
@@ -486,6 +486,30 @@ export function ShareSheet({ title, name, make, onClose }) {
         )}
       </div>
     </div>
+  );
+}
+
+// Tarjeta del campeón al terminar la temporada, con el botón para compartir su imagen.
+export function ChampionCard({ champ }) {
+  const [sharing, setSharing] = useState(false);
+  return (
+    <section className="champ">
+      <svg className="champ-cup" viewBox="0 0 120 140" fill="currentColor" aria-hidden="true">
+        <path d="M30 8h60v10h22c0 26-10 40-28 44-4 10-11 17-19 20v18h18v12H37v-12h18V82c-8-3-15-10-19-20C18 58 8 44 8 18h22zm0 22H20c2 14 7 21 13 24-2-7-3-15-3-24zm60 0c0 9-1 17-3 24 6-3 11-10 13-24zM30 124h64v12H30z" />
+      </svg>
+      <div className="label">Campeón {champ.season}</div>
+      <div className="champ-name">{champ.name}</div>
+      <div className="muted">
+        {champ.total} puntos · {champ.wins} {champ.wins === 1 ? 'GP ganado' : 'GP ganados'} · +{champ.margin} sobre el 2.º
+      </div>
+      <button className="cta m" style={{ marginTop: 16 }} onClick={() => setSharing(true)}>
+        <Icon name="share" size={18} />
+        <span>Compartir</span>
+      </button>
+      {sharing ? (
+        <ShareSheet title={`Campeón ${champ.season}`} name={`campeon-porragp-${champ.season}.png`} make={() => championImage({ champ })} onClose={() => setSharing(false)} />
+      ) : null}
+    </section>
   );
 }
 

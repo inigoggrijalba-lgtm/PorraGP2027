@@ -1,12 +1,12 @@
 // Inicio: el próximo GP, cuánto falta para que cierre el voto, el horario y cómo va la porra.
 import { useContext, useEffect, useRef, useState } from 'react';
-import { sessionsOf } from '../data.js';
+import { championOf, sessionsOf } from '../data.js';
 import { ScheduleShare } from './MotoGP.jsx';
 import { canOfferPush } from '../push.js';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
-import { Icon, Offline, Photo, PickCard, SheetContext, useData, useNow } from '../ui.jsx';
+import { ChampionCard, Icon, Offline, Photo, PickCard, SheetContext, useData, useNow } from '../ui.jsx';
 
 const HOME_NAMES = { FP1: 'Libres 1', PR: 'Práctica', FP2: 'Libres 2', Q1: 'Clasificación', SPR: 'Sprint', WUP: 'Warm up', RAC: 'Carrera' };
 
@@ -366,9 +366,19 @@ function MiniStandings() {
 }
 
 export default function Home() {
-  const { boot, d, eventData } = useData();
+  const { boot, d, eventData, standings } = useData();
   const voting = d.events.get(boot.voting_event_id) || null;
   const event = d.events.get(boot.current_event_id) || voting;
+  const champ = championOf(d, standings, boot.season);
+  if (champ) {
+    return (
+      <>
+        <Offline />
+        <ChampionCard champ={champ} />
+        <MiniStandings />
+      </>
+    );
+  }
   if (!event) {
     return (
       <>

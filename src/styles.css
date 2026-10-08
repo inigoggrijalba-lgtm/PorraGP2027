@@ -697,3 +697,10 @@ svg { flex: none; display: block; }
   .nhero-img { height: 160px; }
   .nhero-title { font-size: 22px; }
 }
+
+/* Campeón de la temporada */
+.champ { position: relative; margin: 16px 16px 4px; padding: 26px 20px 20px; text-align: center; background: radial-gradient(ellipse 90% 70% at 50% 25%, #3A2A0C 0%, var(--panel) 75%); border: 1px solid #5A4718; }
+.champ .label { color: #E8B84A; }
+.champ-cup { display: block; margin-left: auto; margin-right: auto; width: 74px; height: 86px; color: #E8B84A; filter: drop-shadow(0 0 18px rgba(232, 184, 74, 0.5)); margin-bottom: 10px; }
+.champ-name { font-family: var(--title); font-weight: 900; font-size: 52px; line-height: 1; margin: 6px 0 8px; overflow-wrap: anywhere; }
+.champ .cta { width: 100%; }
