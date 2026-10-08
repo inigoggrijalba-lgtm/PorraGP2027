@@ -1,6 +1,6 @@
 // Estado de la app: lo que hay guardado en el móvil y lo último que ha dicho el servidor.
 import { useSyncExternalStore } from 'react';
-import { ApiError, rpc } from './api.js';
+import { ApiError, fn, rpc } from './api.js';
 
 const PREFIX = 'porragp.';
 const disk = {
@@ -170,6 +170,11 @@ export const loadRiders = () => cached('riders', () => call('get_gp_riders'));
 export const loadRider = (id) => cached(`rider|${id}`, () => call('get_gp_rider', { p_rider: id }));
 // Titulares de los medios.
 export const loadNews = () => cached('news', () => call('get_news'));
+// Una noticia en modo lectura: el servidor descarga la página y devuelve solo el texto y las fotos.
+// No se guarda en ningún sitio; aquí se recuerda mientras la app siga abierta.
+export const loadArticle = (id) => cached(`art|${id}`, () => fn('read-article', { token, id }));
+// La noticia tal como salió en la lista, para pintar título y foto mientras llega el texto.
+export const newsFromList = (id) => (fetched.get('news')?.data?.items || []).find((i) => String(i.id) === String(id)) || null;
 
 // Histórico. El servidor pide cada dato a MotoGP en segundo plano la primera vez que alguien lo consulta:
 // mientras llega contesta "pending" y aquí se vuelve a preguntar. Lo ya pedido sale al momento.

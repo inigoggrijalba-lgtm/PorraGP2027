@@ -162,6 +162,16 @@ fotos se enseñan recortadas a través de `images.weserv.nl`, y las noticias en 
 pueden abrirse traducidas con el traductor web de Google (interruptor en la pantalla,
 apagado de fábrica porque algunas redes de empresa bloquean ese traductor).
 
+### Modo lectura
+
+Al tocar una noticia, la app llama a la función `read-article` (`supabase/functions/read-article/`)
+con el token del móvil y el `id` de la noticia. La función pide la dirección a `news_item`
+(que comprueba el móvil y solo acepta noticias de `porra.news`, así que no sirve para descargar
+otras páginas), descarga la página, se queda con el texto, los ladillos y las fotos (Readability)
+y lo devuelve como bloques `{t: p|h|q|li|img}`. **No se guarda en la base de datos**: solo se
+recuerda unos minutos en memoria. Si no se puede extraer (`ok: false`), la app ofrece abrirla en
+la web del medio.
+
 ## Datos de partida (temporada 2026)
 
 - 13 jugadores, 22 pilotos y 22 grandes premios.

@@ -1,5 +1,6 @@
-// Más › Noticias: titulares de los medios de MotoGP. Cada noticia se abre en la web de quien la publica.
-import { useEffect, useState } from 'react';
+// Más › Noticias: titulares de los medios de MotoGP. Cada noticia se lee dentro de la app (modo lectura);
+// desde ahí se puede abrir también en la web de quien la publica.
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { loadNews, now } from '../store.js';
 import { ago } from '../time.js';
 import { Offline, TopBar } from '../ui.jsx';
@@ -11,11 +12,11 @@ const PAGE = 25;
 // Las fotos se piden ya recortadas y ligeras a un servicio de imágenes, no al medio.
 const picture = (url, w, h) => `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&h=${h}&fit=cover&a=attention&output=webp&q=75`;
 // Quien lo active abre las noticias en otro idioma ya traducidas con el traductor web de Google.
-const translatedLink = (item) => `https://translate.google.com/translate?sl=${item.lang}&tl=es&u=${encodeURIComponent(item.url)}`;
+export const translatedLink = (item) => `https://translate.google.com/translate?sl=${item.lang}&tl=es&u=${encodeURIComponent(item.url)}`;
 
 const KEY = 'porragp.noticias.traducir';
 // Apagado de fábrica: lo normal es abrir la noticia en la web del medio, tal cual.
-function readPref() {
+export function readPref() {
   try {
     return localStorage.getItem(KEY) === '1';
   } catch {
@@ -29,11 +30,14 @@ function Picture({ item, w, h, eager }) {
   return <img src={picture(item.image, w, h)} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} />;
 }
 
+// Al volver de leer una noticia se recupera el medio elegido, cuántas se veían y por dónde ibas.
+const back = { source: null, shown: PAGE, y: 0 };
+
 export default function News() {
   const [state, setState] = useState({ status: 'loading', data: null });
   const [again, setAgain] = useState(0);
-  const [source, setSource] = useState(null);
-  const [shown, setShown] = useState(PAGE);
+  const [source, setSource] = useState(back.source);
+  const [shown, setShown] = useState(back.shown);
   const [translate, setTranslate] = useState(readPref);
 
   useEffect(() => {
@@ -52,17 +56,39 @@ export default function News() {
     return () => document.removeEventListener('visibilitychange', onShow);
   }, []);
 
+  useEffect(() => {
+    back.source = source;
+    back.shown = shown;
+  }, [source, shown]);
+  useEffect(() => {
+    const onScroll = () => {
+      back.y = window.scrollY;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      // Solo se recuerda la posición si se sale a leer una noticia; desde el menú se entra arriba del todo.
+      if (!/^#\/mas\/noticias\/./.test(window.location.hash)) Object.assign(back, { source: null, shown: PAGE, y: 0 });
+    };
+  }, []);
+  useLayoutEffect(() => {
+    if (state.status === 'ready' && back.y) {
+      window.scrollTo(0, back.y);
+    }
+  }, [state.status]);
+
   const all = (state.data && state.data.items) || [];
   const sources = ORDER.filter((s) => all.some((i) => i.source === s)).concat([...new Set(all.map((i) => i.source))].filter((s) => !ORDER.includes(s)));
   const list = source ? all.filter((i) => i.source === source) : all;
   const [first, ...rest] = list;
   const foreign = all.some((i) => i.lang !== 'es');
   const t = now();
-  const href = (item) => (translate && item.lang !== 'es' ? translatedLink(item) : item.url);
+  const href = (item) => `#/mas/noticias/${item.id}`;
   const note = (item) => (item.lang === 'es' ? '' : item.translated ? ' · Traducida' : ` · En ${LANGS[item.lang] || 'otro idioma'}`);
   const pick = (s) => {
     setSource(s);
     setShown(PAGE);
+    back.y = 0;
     window.scrollTo(0, 0);
   };
   const togglePref = () => {
@@ -111,7 +137,7 @@ export default function News() {
             </div>
 
             {first ? (
-              <a className="nhero" href={href(first)} target="_blank" rel="noopener noreferrer">
+              <a className="nhero" href={href(first)}>
                 <span className="nhero-img">
                   <Picture item={first} w={700} h={380} eager />
                 </span>
@@ -131,7 +157,7 @@ export default function News() {
 
             <div className="nlist">
               {rest.slice(0, shown).map((item) => (
-                <a key={item.id} className="nrow" href={href(item)} target="_blank" rel="noopener noreferrer">
+                <a key={item.id} className="nrow" href={href(item)}>
                   <span className="nthumb">
                     <Picture item={item} w={208} h={160} />
                   </span>
@@ -157,10 +183,10 @@ export default function News() {
               <div style={{ padding: '8px 20px 0' }}>
                 <div className="swrow">
                   <span className="swtext">
-                    <span>Abrir traducidas las noticias en inglés</span>
-                    <small>Con el traductor de Google. Algunas redes de empresa lo bloquean.</small>
+                    <span>Abrir traducidas en la web</span>
+                    <small>Al pulsar «Ver en la web» en una noticia en inglés, se abre con el traductor de Google. Algunas redes de empresa lo bloquean.</small>
                   </span>
-                  <button className="sw" role="switch" aria-checked={translate} aria-label="Abrir traducidas las noticias en inglés" onClick={togglePref}>
+                  <button className="sw" role="switch" aria-checked={translate} aria-label="Abrir traducidas en la web" onClick={togglePref}>
                     <span className={`sw-track ${translate ? 'on' : ''}`}>
                       <span className="sw-dot" />
                     </span>
@@ -169,7 +195,7 @@ export default function News() {
               </div>
             ) : null}
             <p className="small muted" style={{ padding: '14px 20px 0' }}>
-              Cada noticia se abre en la web del medio.
+              Las noticias se leen aquí, sin anuncios. Al final de cada una tienes el enlace a la web del medio.
               {state.data.synced_at ? ` Última búsqueda: ${ago(state.data.synced_at, t)}.` : ''}
             </p>
           </>

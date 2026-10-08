@@ -724,3 +724,27 @@ svg { flex: none; display: block; }
 .champ-pos.p2 { background: #B4B3AF; }
 .champ-pos.p3 { background: #A0622D; }
 .champ-pop-foot { display: flex; flex-direction: column; gap: 8px; padding: 12px 20px calc(16px + var(--safe-b)); max-width: 480px; width: 100%; margin: 0 auto; }
+
+/* Noticia en modo lectura */
+.art { padding-bottom: 8px; }
+.art > .art-fig:first-child { margin: 0; }
+.art > .art-fig:first-child img { max-height: 260px; object-fit: cover; }
+.art-head { padding: 16px 20px 4px; display: flex; flex-direction: column; gap: 10px; }
+.art-title { font-family: var(--cond); font-weight: 700; font-size: 28px; line-height: 1.1; overflow-wrap: anywhere; }
+.art-note { font-size: 13px; color: var(--amber); }
+.art-body { padding: 4px 20px 0; font-size: 17px; line-height: 1.6; color: #E6E5E1; }
+.art-body p { margin: 0 0 16px; overflow-wrap: anywhere; white-space: pre-line; }
+.art-body h3 { font-family: var(--cond); font-weight: 700; font-size: 21px; line-height: 1.2; margin: 24px 0 10px; color: var(--text); }
+.art-body blockquote { margin: 0 0 16px; padding: 4px 0 4px 14px; border-left: 3px solid var(--red); color: var(--text2); font-style: italic; }
+.art-body ul { margin: 0 0 16px; padding-left: 22px; }
+.art-body li { margin-bottom: 6px; }
+.art-fig { margin: 8px -20px 18px; }
+.art-fig img { display: block; width: 100%; height: auto; background: var(--panel2); }
+.art-fig figcaption { padding: 6px 20px 0; font-size: 12px; line-height: 1.4; color: var(--text3); }
+.art-wait { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.art-wait i { display: block; height: 14px; background: var(--panel2); animation: artpulse 1.1s ease-in-out infinite alternate; }
+.art-wait i.short { width: 60%; }
+.art-fail { padding: 16px 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.art-foot { margin: 8px 20px 0; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.art-foot .btn, .art-foot .cta { display: flex; align-items: center; justify-content: center; gap: 8px; }
+@keyframes artpulse { from { opacity: 0.45; } to { opacity: 1; } }

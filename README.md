@@ -13,7 +13,7 @@ App de la porra de MotoGP: voto por Gran Premio, clasificación, horarios y cale
 | `src/` | La app (React). `screens/` tiene una pantalla por archivo; `store.js` guarda el estado y habla con la base de datos; `share.js` pinta las imágenes para compartir |
 | `public/` | Icono, manifiesto y el guardado sin conexión (`sw.js`) |
 | `scripts/build.mjs` | Compila todo en `dist/` |
-| `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil; `sync-news` lee las noticias |
+| `supabase/functions/` | `sync-motogp` sincroniza con MotoGP; `send-push` envía los avisos al móvil; `sync-news` lee las noticias; `read-article` las prepara en modo lectura |
 | `vercel.json` | Cómo compila y sirve Vercel la app |
 | `public/fonts/` | Tipografías de la app, servidas desde aquí: Saira Stencil en titulares y Saira en el resto (libres, licencia SIL OFL) |
 | `redirect/` y `.github/workflows/deploy.yml` | Página que GitHub Pages publica en la dirección antigua para llevar a la nueva |
