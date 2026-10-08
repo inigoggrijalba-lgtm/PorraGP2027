@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { indexOf } from './data.js';
 import { now, setActive, useStore } from './store.js';
 import { canShareFile, download, toBlob } from './share.js';
-import { teamShort } from './teams.js';
+import { teamColors, teamShort } from './teams.js';
 import { dateRange } from './time.js';
 
 const PATHS = {
@@ -267,9 +267,23 @@ export function BottomNav({ current, voteDot }) {
   );
 }
 
+// Sustitutos e invitados no traen color de MotoGP: se usa el del equipo con el que corren.
+export function riderColors(rider) {
+  if (rider.team_color) return [rider.team_color, rider.text_color || '#F5F4F2'];
+  return rider.kind ? teamColors(rider.team_name) : ['#2B2B2F', '#F5F4F2'];
+}
+export const isGuest = (rider) => !!rider.kind && rider.kind !== 'Official';
+// Placa casi blanca: necesita una raya oscura entre el reborde blanco y el color.
+const light = (hex) => {
+  const n = parseInt(String(hex).slice(1, 7), 16);
+  return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114 > 200;
+};
+
 export function Plate({ rider, size = '' }) {
+  const [bg, ink] = riderColors(rider);
+  const guest = isGuest(rider);
   return (
-    <span className={`plate ${size}`} style={{ background: rider.team_color || '#2B2B2F', color: rider.text_color || '#F5F4F2' }}>
+    <span className={`plate ${size}${guest ? ' guest' : ''}${guest && light(bg) ? ' light' : ''}`} style={guest ? { '--tc': bg, color: ink } : { background: bg, color: ink }}>
       {rider.number}
     </span>
   );
@@ -290,7 +304,7 @@ export function Photo({ rider, size = 's', children }) {
   const [loaded, setLoaded] = useState(false);
   const src = failed ? null : thumb(rider.photo_url, size === 'l' || size === 'xm' || size === 'xl' ? 400 : 240);
   return (
-    <span className={`photo ${size}`} style={{ background: rider.team_color || '#2B2B2F', color: rider.text_color || '#F5F4F2' }}>
+    <span className={`photo ${size}`} style={{ background: riderColors(rider)[0], color: riderColors(rider)[1] }}>
       {src ? <img src={src} alt="" decoding="async" style={loaded ? undefined : { opacity: 0 }} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} /> : null}
       {src && loaded ? null : (
         <svg width={dims[0]} height={dims[1]} viewBox="0 0 64 70" fill="currentColor" fillOpacity="0.38" aria-hidden="true">
