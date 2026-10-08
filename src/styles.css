@@ -704,3 +704,23 @@ svg { flex: none; display: block; }
 .champ-cup { display: block; margin-left: auto; margin-right: auto; width: 74px; height: 86px; color: #E8B84A; filter: drop-shadow(0 0 18px rgba(232, 184, 74, 0.5)); margin-bottom: 10px; }
 .champ-name { font-family: var(--title); font-weight: 900; font-size: 52px; line-height: 1; margin: 6px 0 8px; overflow-wrap: anywhere; }
 .champ .cta { width: 100%; }
+.champ-pop { position: fixed; inset: 0; z-index: 35; display: flex; flex-direction: column; background: radial-gradient(ellipse 90% 55% at 50% 40%, #3A2A0C 0%, var(--bg) 72%); animation: rise 0.25s ease-out; padding-top: var(--safe-t); }
+.champ-pop-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; padding: 22px 20px 12px; text-align: center; max-width: 480px; width: 100%; margin: 0 auto; }
+.champ-pop-body .label { text-align: left; }
+.champ-pop-title { font-family: var(--title); font-weight: 900; font-size: 64px; line-height: 1; text-align: left; margin: 4px 0 18px; }
+.champ-pop .champ-cup { width: 96px; height: 112px; }
+.champ-year { font-family: var(--title); font-weight: 900; font-size: 26px; letter-spacing: 8px; color: #E8B84A; margin-top: 4px; }
+.champ-name.big { font-size: 64px; margin: 2px 0 18px; }
+.champ-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.champ-tiles > div { background: var(--panel); border: 1px solid var(--line); padding: 10px 2px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; min-height: 78px; }
+.champ-tiles b { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; }
+.champ-tiles span { font-family: var(--cond); font-weight: 600; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+.gold { color: #E8B84A; }
+.champ-pod { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.champ-pod > div { display: flex; align-items: center; gap: 10px; background: var(--panel); padding: 10px; font-size: 18px; }
+.champ-pod-name { flex: 1; text-align: left; font-family: var(--cond); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.champ-pod .num { font-family: var(--display); font-weight: 800; }
+.champ-pos { width: 34px; height: 26px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; color: #0A0A0B; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.champ-pos.p2 { background: #B4B3AF; }
+.champ-pos.p3 { background: #A0622D; }
+.champ-pop-foot { display: flex; flex-direction: column; gap: 8px; padding: 12px 20px calc(16px + var(--safe-b)); max-width: 480px; width: 100%; margin: 0 auto; }

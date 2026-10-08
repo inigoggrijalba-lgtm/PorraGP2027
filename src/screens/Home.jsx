@@ -6,7 +6,7 @@ import { canOfferPush } from '../push.js';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
-import { ChampionCard, Icon, Offline, Photo, PickCard, SheetContext, useData, useNow } from '../ui.jsx';
+import { ChampionCard, ChampionPopup, Icon, Offline, Photo, PickCard, SheetContext, useChampionPopup, useData, useNow } from '../ui.jsx';
 
 const HOME_NAMES = { FP1: 'Libres 1', PR: 'Práctica', FP2: 'Libres 2', Q1: 'Clasificación', SPR: 'Sprint', WUP: 'Warm up', RAC: 'Carrera' };
 
@@ -370,10 +370,12 @@ export default function Home() {
   const voting = d.events.get(boot.voting_event_id) || null;
   const event = d.events.get(boot.current_event_id) || voting;
   const champ = championOf(d, standings, boot.season);
+  const [popup, closePopup] = useChampionPopup(champ);
   if (champ) {
     return (
       <>
         <Offline />
+        {popup ? <ChampionPopup champ={champ} onClose={closePopup} /> : null}
         <ChampionCard champ={champ} />
         <MiniStandings />
       </>

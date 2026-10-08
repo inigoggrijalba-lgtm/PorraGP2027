@@ -513,6 +513,73 @@ export function ChampionCard({ champ }) {
   );
 }
 
+// Al abrir la app con la temporada terminada sale el campeón a pantalla completa, hasta que se cierra.
+const seenKey = (season) => `porragp.champSeen.${season}`;
+export function useChampionPopup(champ) {
+  const [open, setOpen] = useState(() => {
+    if (!champ) return false;
+    try {
+      return !localStorage.getItem(seenKey(champ.season));
+    } catch {
+      return true;
+    }
+  });
+  const close = () => {
+    try {
+      localStorage.setItem(seenKey(champ.season), '1');
+    } catch {
+      // sin almacenamiento volverá a salir la próxima vez, nada más
+    }
+    setOpen(false);
+  };
+  return [!!champ && open, close];
+}
+
+export function ChampionPopup({ champ, onClose }) {
+  const [sharing, setSharing] = useState(false);
+  return (
+    <div className="champ-pop" role="dialog" aria-modal="true" aria-label={`Campeón ${champ.season}`}>
+      <div className="sheet-kerb" style={{ margin: 0 }} />
+      <div className="champ-pop-body">
+        <div className="label">Temporada {champ.season} terminada</div>
+        <div className="champ-pop-title">CAMPEÓN</div>
+        <svg className="champ-cup" viewBox="0 0 120 140" fill="currentColor" aria-hidden="true">
+        <path d="M30 8h60v10h22c0 26-10 40-28 44-4 10-11 17-19 20v18h18v12H37v-12h18V82c-8-3-15-10-19-20C18 58 8 44 8 18h22zm0 22H20c2 14 7 21 13 24-2-7-3-15-3-24zm60 0c0 9-1 17-3 24 6-3 11-10 13-24zM30 124h64v12H30z" />
+      </svg>
+        <div className="champ-year">{champ.season}</div>
+        <div className="champ-name big">{champ.name}</div>
+        <div className="champ-tiles">
+          <div><b className="gold">{champ.total}</b><span>Puntos</span></div>
+          <div><b>{champ.wins}</b><span>{champ.wins === 1 ? 'GP ganado' : 'GP ganados'}</span></div>
+          <div><b>+{champ.margin}</b><span>Sobre el 2.º</span></div>
+          <div>{champ.rider ? <Plate rider={champ.rider} size="m" /> : <b>–</b>}<span>Su piloto fetiche</span></div>
+        </div>
+        <div className="champ-pod">
+          {champ.podium.slice(1).map((p, i) => (
+            <div key={p.name}>
+              <span className={`champ-pos p${i + 2}`}>{i + 2}</span>
+              <span className="champ-pod-name">{p.name}</span>
+              <span className="num">{p.total}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="champ-pop-foot">
+        <button className="cta m" onClick={() => setSharing(true)}>
+          <Icon name="share" size={18} />
+          <span>Compartir</span>
+        </button>
+        <button className="btn quiet wide" onClick={onClose}>
+          Cerrar
+        </button>
+      </div>
+      {sharing ? (
+        <ShareSheet title={`Campeón ${champ.season}`} name={`campeon-porragp-${champ.season}.png`} make={() => championImage({ champ })} onClose={() => setSharing(false)} />
+      ) : null}
+    </div>
+  );
+}
+
 export function VoteStatus({ rider }) {
   return rider ? (
     <span className="prow-sub ok">
