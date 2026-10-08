@@ -1,6 +1,7 @@
 // Pestaña Porra: clasificación general, votos y puntos de cada GP, y estadísticas.
 import { useEffect, useRef, useState } from 'react';
 import { now } from '../store.js';
+import { teamShort } from '../teams.js';
 import { championOf } from '../data.js';
 import { ChampionCard, Offline, Plate, TopBar, useData } from '../ui.jsx';
 import Stats from './Stats.jsx';
@@ -131,18 +132,21 @@ function ByGp() {
                   <Plate rider={r.rider} />
                   <span className="c-two">
                     <span>{r.rider.short_name}</span>
-                    {closed ? (
-                      <small>
-                        Sprint {show(r, 'sprint_points')} · Carrera {show(r, 'race_points')}
-                      </small>
-                    ) : null}
+                    <small>{teamShort(r.rider)}</small>
                   </span>
                 </>
               ) : (
                 <span className="muted small">{closed ? 'Sin voto' : 'Pendiente'}</span>
               )}
             </div>
-            <div className="c-pts">{show(r, 'total')}</div>
+            <div className="c-pts">
+              <span>{show(r, 'total')}</span>
+              {closed && r.rider ? (
+                <small aria-label={`Sprint ${show(r, 'sprint_points')}, carrera ${show(r, 'race_points')}`}>
+                  S:{show(r, 'sprint_points')} / R:{show(r, 'race_points')}
+                </small>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>

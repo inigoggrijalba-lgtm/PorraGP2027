@@ -751,3 +751,8 @@ svg { flex: none; display: block; }
 .seg.s { font-size: 13px; }
 .seg.s button { height: 36px; padding: 0 8px; min-width: 0; }
 .seg-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.by-gp .c-pts { width: auto; min-width: 52px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.by-gp .c-pts small { font-family: var(--display); font-weight: 500; font-size: 11px; color: var(--text2); white-space: nowrap; }
+.by-gp .c-pts { padding-left: 8px; }
+.by-gp .c-two { min-width: 0; }
+.by-gp .c-two small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
