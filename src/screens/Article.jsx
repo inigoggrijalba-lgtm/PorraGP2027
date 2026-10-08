@@ -78,7 +78,6 @@ export default function Article({ id }) {
       <main className="main has-nav">
         <Offline />
         <article className="art">
-          {image ? <Img src={image} eager /> : null}
           <div className="art-head">
             {item ? (
               <>
@@ -97,6 +96,8 @@ export default function Article({ id }) {
             ) : null}
           </div>
 
+          {/* La foto va debajo del titular. Si la noticia ya empieza con una foto, se usa esa (con su pie) y no se repite. */}
+          {image && !(state.status === 'ready' && data.blocks.slice(0, 3).some((b) => b.t === 'img')) ? <Img src={image} eager /> : null}
           {state.status === 'loading' ? (
             <div className="art-wait" role="status" aria-label="Cargando la noticia">
               <i />
