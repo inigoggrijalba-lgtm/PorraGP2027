@@ -748,3 +748,6 @@ svg { flex: none; display: block; }
 .art-foot { margin: 8px 20px 0; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
 .art-foot .btn, .art-foot .cta { display: flex; align-items: center; justify-content: center; gap: 8px; }
 @keyframes artpulse { from { opacity: 0.45; } to { opacity: 1; } }
+.seg.s { font-size: 13px; }
+.seg.s button { height: 36px; padding: 0 8px; min-width: 0; }
+.seg-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

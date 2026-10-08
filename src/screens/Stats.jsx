@@ -187,6 +187,7 @@ export default function Stats() {
   const [picked, setPicked] = useState(null);
   const [choosing, setChoosing] = useState(false);
   const [chosen, setChosen] = useState(null);
+  const [scope, setScope] = useState('porra');
   const events = boot.events.filter((e) => e.status === 'finished');
   const list = standings.filter((s) => s.active);
   const n = events.length;
@@ -225,12 +226,16 @@ export default function Stats() {
   // Votos de toda la porra en los GP ya cerrados.
   const closed = new Set(boot.events.filter((e) => e.status === 'finished' || Date.parse(e.close_at) <= now()).map((e) => e.id));
   const count = new Map();
-  for (const v of boot.votes) if (closed.has(v.event_id)) count.set(v.rider_id, (count.get(v.rider_id) || 0) + 1);
+  const onlyMe = scope === 'jugador';
+  for (const v of boot.votes) {
+    if (!closed.has(v.event_id) || (onlyMe && v.player_id !== me.id)) continue;
+    count.set(v.rider_id, (count.get(v.rider_id) || 0) + 1);
+  }
   const voted = [...count]
     .map(([id, times]) => ({ rider: d.riders.get(id), times }))
     .filter((v) => v.rider)
     .sort((a, b) => b.times - a.times || a.rider.short_name.localeCompare(b.rider.short_name, 'es'))
-    .slice(0, 8);
+    .slice(0, onlyMe ? 22 : 8);
   const mostVotes = voted.length ? voted[0].times : 1;
 
   return (
@@ -337,12 +342,19 @@ export default function Stats() {
         </div>
       </section>
 
-      {voted.length ? (
-        <section className="sec">
-          <div className="sec-head" style={{ marginBottom: 8 }}>
-            <h2 className="h2">Pilotos más votados</h2>
-            <div className="small muted">Toda la porra</div>
-          </div>
+      <section className="sec">
+        <div className="sec-head" style={{ marginBottom: 10 }}>
+          <h2 className="h2">Pilotos más votados</h2>
+        </div>
+        <div className="seg s" role="group" aria-label="De quién son los votos" style={{ marginBottom: 12 }}>
+          <button aria-pressed={!onlyMe} onClick={() => setScope('porra')}>
+            Toda la porra
+          </button>
+          <button aria-pressed={onlyMe} onClick={() => setScope('jugador')}>
+            <span className="seg-name">{mine ? 'Tus votos' : me.name}</span>
+          </button>
+        </div>
+        {voted.length ? (
           <div className="voted">
             {voted.map((v) => (
               <div key={v.rider.id}>
@@ -354,8 +366,15 @@ export default function Stats() {
               </div>
             ))}
           </div>
-        </section>
-      ) : null}
+        ) : (
+          <p className="muted">{onlyMe ? `${mine ? 'No has votado' : `${me.name} no ha votado`} en ningún Gran Premio cerrado.` : 'Aún no hay votos de Grandes Premios cerrados.'}</p>
+        )}
+        {onlyMe && voted.length ? (
+          <p className="small muted" style={{ marginTop: 10 }}>
+            Cada piloto se puede votar como mucho 3 veces por temporada.
+          </p>
+        ) : null}
+      </section>
 
       {choosing ? (
         <PickSheet
