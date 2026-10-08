@@ -1,6 +1,6 @@
 // Noticias de MotoGP. Lee los titulares que cada medio publica en su RSS, se queda con los de
 // MotoGP, Moto2 y Moto3, traduce los que no están en castellano y los guarda en la base de datos.
-// Solo se guarda el titular, una entradilla corta, la imagen y el enlace: la noticia se lee en el medio.
+// Solo se guarda el titular, una entradilla corta, la imagen y el enlace (el texto lo prepara read-article al abrirla).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -19,6 +19,8 @@ const FEEDS: Feed[] = [
   { source: "Crash.net", url: "https://www.crash.net/rss/motogp", lang: "en", keep: (it) => TOPIC.test(it.url) },
   { source: "GPOne", url: "https://www.gpone.com/en/article-feed.xml", lang: "en", keep: (it) => TOPIC.test(it.url) },
   { source: "The Race", url: "https://www.the-race.com/category/motogp/feed/", lang: "en" },
+  // Motociclismo solo tiene un canal general (15 noticias): se queda con las de la categoría MotoGP.
+  { source: "Motociclismo", url: "https://www.motociclismo.es/rss.xml", lang: "es", keep: (it) => it.categories.some((c) => /^moto(gp|2|3)$/i.test(c)) || /\/mundial-motogp\//i.test(it.url) },
 ];
 
 async function rpc(name: string, args: Record<string, unknown>): Promise<Any> {

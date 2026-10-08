@@ -144,6 +144,7 @@ que lee el RSS de cada medio:
 | Crash.net | inglés | lo de MotoGP, Moto2 y Moto3 (el RSS mezcla Superbikes) |
 | GPOne | inglés | lo de MotoGP, Moto2 y Moto3 |
 | The Race | inglés | todo (el RSS ya es de MotoGP) |
+| Motociclismo | castellano | categoría MotoGP (su RSS es general, de 15 noticias) |
 
 De cada noticia se guarda solo el titular, una entradilla de unas 200 letras, la imagen y
 el enlace; el texto se lee en la web del medio. Si el RSS no trae imagen (Motosan, GPOne),

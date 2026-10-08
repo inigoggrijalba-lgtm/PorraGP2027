@@ -5,7 +5,7 @@ import { loadNews, now } from '../store.js';
 import { ago } from '../time.js';
 import { Offline, TopBar } from '../ui.jsx';
 
-const ORDER = ['Motorsport.com', 'Motosan', 'Crash.net', 'GPOne', 'The Race'];
+const ORDER = ['Motorsport.com', 'Motociclismo', 'Motosan', 'Crash.net', 'GPOne', 'The Race'];
 const LANGS = { en: 'inglés', it: 'italiano', fr: 'francés', de: 'alemán' };
 const PAGE = 25;
 

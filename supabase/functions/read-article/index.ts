@@ -88,7 +88,7 @@ function imgSrc(img: Element, base: string) {
   return absolute(img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || biggest || img.getAttribute('src'), base);
 }
 
-const JUNK = /^(lee también|leer también|read also|read more|also read|more:|related:|te puede interesar|publicidad|advertisement|anuncio|suscríbete|subscribe|sigue a|follow us|compartir|share this)/i;
+const JUNK = /^(lee también|leer también|read also|read more|also read|more:|related:|te puede interesar|publicidad|advertisement|anuncio|suscríbete|subscribe|sigue a|follow us|compartir|share this|quiero añadir gratis|activar ahora|vive el gp de .* en hospitality|\d{1,2} de [a-z]+ de \d{4} \(\d{1,2}:\d{2} ce?s?t\)$)/i;
 
 const STOP = /^(queremos tu opini[oó]n|comparte o guarda este art[ií]culo|¿te gustan las motos|tienes 2 opciones|\w+ joined the crash\.net team|redactora? (en|y) )/i;
 
@@ -117,7 +117,7 @@ function toBlocks(html: string, base: string): Block[] {
       } else if (tag === 'blockquote') {
         // Los tuits incrustados llegan como citas con el texto del tuit; se quedan como cita.
         const text = clean(node.textContent);
-        if (text) out.push({ t: 'q', text });
+        if (text && !JUNK.test(text)) out.push({ t: 'q', text });
       } else if (tag === 'li') {
         const text = clean(node.textContent);
         if (text && !JUNK.test(text)) out.push({ t: 'li', text });
@@ -171,7 +171,7 @@ async function read(item: { id: number; url: string; title: string; image: strin
   const norm = (s: string) => s.toLowerCase().replace(/\W+/g, '');
   const heroKey = hero ? hero.split('?')[0] : '';
   blocks = blocks.filter((b, i) => !(b.t === 'img' && i < 3 && heroKey && b.src!.split('?')[0] === heroKey));
-  blocks = blocks.filter((b) => !(b.t === 'h' && norm(b.text!) === norm(art.title || '')));
+  blocks = blocks.filter((b) => !(b.t === 'h' && [art.title, item.title].some((t) => t && norm(b.text!) === norm(t))));
   const words = blocks.filter((b) => b.t !== 'img').reduce((n, b) => n + b.text!.split(/\s+/).length, 0);
   if (words < 60) throw new Error('POCO_TEXTO');
   return {

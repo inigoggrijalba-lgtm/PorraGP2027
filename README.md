@@ -35,4 +35,4 @@ reglas, instalación, fotos de los pilotos, panel de administrador, resultados d
 (MotoGP, Moto2 y Moto3) con sus PDF oficiales, parrilla e imágenes para compartir (clasificación,
 parrilla y horario), pilotos de las tres categorías con su ficha, avisos al móvil, estadísticas de la
 porra (evolución, puntos por GP y pilotos más votados), histórico de resultados desde 1949 y noticias
-de cinco medios (Motorsport.com, Motosan, Crash.net, GPOne y The Race) con los titulares traducidos.
+de seis medios (Motorsport.com, Motociclismo, Motosan, Crash.net, GPOne y The Race) con los titulares traducidos.
