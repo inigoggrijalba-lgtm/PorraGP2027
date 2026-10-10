@@ -1,6 +1,6 @@
 // Inicio: el próximo GP, cuánto falta para que cierre el voto, el horario y cómo va la porra.
 import { useContext, useEffect, useRef, useState } from 'react';
-import { championOf, sessionsOf } from '../data.js';
+import { championOf, nextOpening, openText, sessionsOf } from '../data.js';
 import { ScheduleShare } from './MotoGP.jsx';
 import { canOfferPush } from '../push.js';
 import { now, refresh } from '../store.js';
@@ -113,6 +113,46 @@ function OpenState({ event }) {
   );
 }
 
+// GP siguiente cuya votación todavía no se ha abierto: se abre el lunes después de la carrera anterior.
+function SoonState({ event }) {
+  const t = useNow(30000);
+  const asked = useRef(false);
+  const left = Date.parse(event.open_at) - t;
+  useEffect(() => {
+    if (left <= 0 && !asked.current) {
+      asked.current = true;
+      refresh();
+    }
+  }, [left]);
+  return (
+    <div className="count">
+      <div className="count-head closed">
+        <Icon name="lock" />
+        <span>La votación se abre el {openText(event)}</span>
+      </div>
+      <div className="small muted" style={{ fontSize: 14 }}>
+        Se abre el lunes después de cada carrera, para que no se mezcle con el fin de semana anterior. {closeLine(event)}
+      </div>
+    </div>
+  );
+}
+const closeLine = (e) => (e.close_provisional ? `Cerrará el ${dayMid(e.close_at)} (hora por confirmar).` : `Cerrará el ${dayMid(e.close_at)} a las ${hm(e.close_at)}.`);
+
+function NextOpens() {
+  const { boot } = useData();
+  const t = useNow(60000);
+  const next = nextOpening(boot, t);
+  if (!next) return null;
+  return (
+    <div className="count" style={{ marginTop: 12 }}>
+      <div className="count-head closed">
+        <Icon name="clock" />
+        <span>GP de {next.name}: se vota desde el {openText(next)}</span>
+      </div>
+    </div>
+  );
+}
+
 function ClosedState({ event, sessions, voting }) {
   const { d, active, eventData } = useData();
   const t = useNow(30000);
@@ -157,7 +197,9 @@ function ClosedState({ event, sessions, voting }) {
             </a>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <NextOpens />
+      )}
     </>
   );
 }
@@ -396,19 +438,21 @@ export default function Home() {
   }
   // Abierta de verdad: es el GP que toca votar y su cierre aún no ha pasado.
   const open = !!voting && voting.id === event.id && Date.parse(event.close_at) > now();
+  // Aún no ha empezado su fin de semana y su votación no se ha abierto.
+  const soon = !open && event.status === 'scheduled' && !!event.open_at && Date.parse(event.open_at) > now();
   const sessions = sessionsOf(eventData[event.id], event, 'MotoGP');
   return (
     <>
       <Offline />
       <section className="hero">
         <div className="label">
-          Ronda {event.round} de {d.rounds} · {open ? 'Próximo Gran Premio' : 'Gran Premio en juego'}
+          Ronda {event.round} de {d.rounds} · {open || soon ? 'Próximo Gran Premio' : 'Gran Premio en juego'}
         </div>
         <h1 className={`hero-name ${event.name.length > 10 ? 'long' : ''}`}>{event.name}</h1>
         <div className="muted">
           {event.circuit} · {dateRange(event.date_start, event.date_end)}
         </div>
-        {open ? <OpenState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
+        {open ? <OpenState event={event} /> : soon ? <SoonState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>
       <PushHint />
       <section className="sec">
@@ -418,7 +462,7 @@ export default function Home() {
         </div>
         <Schedule event={event} sessions={sessions} open={open} />
       </section>
-      <Votes event={event} open={open} />
+      {soon ? null : <Votes event={event} open={open} />}
       <MiniStandings />
     </>
   );

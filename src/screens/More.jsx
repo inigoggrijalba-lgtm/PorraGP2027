@@ -206,7 +206,7 @@ export function Players() {
 }
 
 const RULES = [
-  ['Un piloto por Gran Premio', 'Vota a un piloto de MotoGP antes de que arranque la Sprint del sábado.'],
+  ['Un piloto por Gran Premio', 'La votación se abre el lunes después de cada carrera. Vota a un piloto de MotoGP antes de que arranque la Sprint del sábado.'],
   ['Un cambio, antes de la Sprint', 'Puedes cambiar tu voto una vez. Cuando empieza la Sprint, el voto queda cerrado.'],
   ['Cada piloto, tres veces', 'Solo puedes votar al mismo piloto 3 veces por temporada. Cuenta el piloto con el que te quedas, no el que descartas al cambiar.'],
   ['Sumas lo que sume tu piloto', 'Te llevas sus puntos de la Sprint y de la carrera del domingo. El máximo en un Gran Premio es 37.'],

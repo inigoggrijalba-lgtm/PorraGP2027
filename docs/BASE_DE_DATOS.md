@@ -53,7 +53,7 @@ y `admin_save_rider` (nombre corto y si se le puede votar).
 
 ## Reglas del voto (dentro de `cast_vote`)
 
-1. Solo se vota el próximo GP con la votación abierta.
+1. Solo se vota el próximo GP con la votación abierta. Se abre el lunes a las 00:00 (hora peninsular) siguiente a la carrera del GP anterior (`porra.open_at`); el primero de la temporada está abierto desde el principio. Así no se solapa con el fin de semana en curso.
 2. El voto se cierra a la hora de la Sprint (`sprint_at`, o `close_override` si el administrador la cambia). Manda el reloj del servidor.
 3. Un solo cambio por GP. Repetir el mismo piloto no gasta el cambio.
 4. Cada piloto, como máximo 3 veces por temporada. Cuenta el piloto con el que te quedas.

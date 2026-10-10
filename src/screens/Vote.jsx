@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { messageFor } from '../api.js';
 import { MAX_USES } from '../config.js';
+import { nextOpening, openText } from '../data.js';
 import { now, setActive, vote } from '../store.js';
 import { teamShort } from '../teams.js';
 import { dayMid, hm } from '../time.js';
@@ -15,13 +16,21 @@ const switchTo = (id) => {
 };
 
 function NoVoting() {
+  const { boot } = useData();
+  const next = nextOpening(boot, now());
   return (
     <>
       <TopBar />
       <main className="main has-nav">
         <div className="page-head">
           <h1 className="h1 s">Ahora no se vota</h1>
-          <p className="muted">No hay ningún Gran Premio con la votación abierta. En cuanto se abra el siguiente, aparecerá aquí.</p>
+          {next ? (
+            <p className="muted">
+              La votación del GP de {next.name} se abre el <b style={{ color: 'var(--text)' }}>{openText(next)}</b>, el lunes después de la carrera, para que no se mezcle con el fin de semana en curso.
+            </p>
+          ) : (
+            <p className="muted">No hay ningún Gran Premio con la votación abierta. En cuanto se abra el siguiente, aparecerá aquí.</p>
+          )}
         </div>
       </main>
     </>

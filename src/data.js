@@ -1,6 +1,7 @@
 // Vistas de los datos del servidor, calculadas una sola vez por carga.
 import { MAX_USES } from './config.js';
 import { sortRiders } from './teams.js';
+import { dayMid, hm } from './time.js';
 
 let lastBoot = null;
 let lastIndex = null;
@@ -89,3 +90,9 @@ export function championOf(d, standings, season) {
     podium: list.slice(0, 3).map((s) => ({ name: s.name, total: s.total })),
   };
 }
+
+// El siguiente GP cuya votación aún no se ha abierto (se abre el lunes después de la carrera anterior).
+export function nextOpening(boot, t) {
+  return boot.events.find((e) => e.status === 'scheduled' && e.open_at && Date.parse(e.open_at) > t && Date.parse(e.close_at) > t) || null;
+}
+export const openText = (e) => `${dayMid(e.open_at)} a las ${hm(e.open_at)}`;
