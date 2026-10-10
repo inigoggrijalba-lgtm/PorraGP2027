@@ -755,3 +755,18 @@ svg { flex: none; display: block; }
 .by-gp .c-two { min-width: 0; }
 .by-gp .c-two small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .art > .art-fig { margin: 0 0 18px; }
+
+/* Mundial de pilotos */
+.wtable { margin-top: 8px; }
+.wrow { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.wrow:active { opacity: 0.8; }
+.wpos { width: 26px; flex: none; text-align: right; font-family: var(--display); font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+.wpos.first { color: var(--red-text); }
+.wname { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.wname > span { font-family: var(--cond); font-weight: 600; font-size: 19px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wname small { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wpts { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.wpts b { font-family: var(--display); font-weight: 800; font-size: 19px; font-variant-numeric: tabular-nums; }
+.wpts small { font-family: var(--display); font-weight: 500; font-size: 12px; color: var(--text2); }
+.wrow.top .wpts b { color: var(--text); }
+@media (max-width: 380px) { .tabs { gap: 14px; letter-spacing: 0.05em; font-size: 14px; } }

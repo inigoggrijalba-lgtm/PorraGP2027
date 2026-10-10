@@ -18,6 +18,9 @@ export function Tabs({ current }) {
       <a href="#/motogp/calendario" aria-current={current === 'calendario' ? 'page' : undefined}>
         Calendario
       </a>
+      <a href="#/motogp/mundial" aria-current={current === 'mundial' ? 'page' : undefined}>
+        Mundial
+      </a>
       <a href="#/motogp/pilotos" aria-current={current === 'pilotos' ? 'page' : undefined}>
         Pilotos
       </a>

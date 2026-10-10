@@ -71,6 +71,68 @@ function Card({ r }) {
   );
 }
 
+// Clasificación del Mundial de pilotos, de la categoría elegida.
+const pts = (n) => (n == null ? '0' : String(n).replace('.', ','));
+export function Standings() {
+  const { d } = useData();
+  const [category, setCategory] = useState('MotoGP');
+  const { status, data } = useLoaded(loadRiders, []);
+  const list = (data || []).filter((r) => r.category === category && r.pos != null).sort((a, b) => a.pos - b.pos);
+  const lead = list.length ? Number(list[0].points) || 0 : 0;
+  let body;
+  if (status === 'loading') body = <p className="muted" style={{ padding: '16px 0' }}>Cargando la clasificación…</p>;
+  else if (status === 'error') body = <p className="err-text" style={{ padding: '16px 0' }}>No se ha podido cargar la clasificación. Comprueba la conexión.</p>;
+  else if (!list.length) body = <p className="muted" style={{ padding: '16px 0' }}>Todavía no hay clasificación del Mundial de {category} esta temporada.</p>;
+  else
+    body = (
+      <div className="wtable">
+        {list.map((r, i) => {
+          const s = shown(r, d);
+          const gap = lead - (Number(r.points) || 0);
+          const extra = [r.wins ? `${r.wins} ${r.wins === 1 ? 'victoria' : 'victorias'}` : '', r.podiums ? `${r.podiums} ${r.podiums === 1 ? 'podio' : 'podios'}` : ''].filter(Boolean).join(' · ');
+          return (
+            <a key={r.id} className={`wrow ${i < 3 ? 'top' : ''}`} href={`#/motogp/piloto/${r.id}`}>
+              <span className={`wpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos}</span>
+              <span className="plate rp" style={{ background: s.asRider.team_color, color: s.asRider.text_color }}>
+                {r.number}
+              </span>
+              <span className="wname">
+                <span>{`${s.first ? s.first.charAt(0) + '. ' : ''}${s.last}`}</span>
+                <small>{[category === 'MotoGP' ? teamShort({ team_name: r.team, constructor: r.constructor }) : r.constructor || r.team, extra].filter(Boolean).join(' · ')}</small>
+              </span>
+              <span className="wpts">
+                <b>{pts(r.points)}</b>
+                <small>{i === 0 ? 'Líder' : `−${pts(gap)}`}</small>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    );
+  return (
+    <>
+      <TopBar />
+      <main className="main has-nav">
+        <Offline />
+        <Tabs current="mundial" />
+        <div style={{ padding: '12px 20px 4px' }}>
+          <div className="seg" role="group" aria-label="Categoría">
+            {CLASSES.map((c) => (
+              <button key={c} aria-pressed={category === c} onClick={() => setCategory(c)}>
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '0 20px' }}>
+          {body}
+          {list.length ? <p className="small muted" style={{ padding: '12px 0 0' }}>Clasificación oficial de MotoGP. Toca un piloto para ver su ficha.</p> : null}
+        </div>
+      </main>
+    </>
+  );
+}
+
 export function RidersList() {
   const { d } = useData();
   const [category, setCategory] = useState('MotoGP');

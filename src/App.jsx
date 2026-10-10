@@ -9,7 +9,7 @@ import { Calendar, FullSchedule, Results } from './screens/MotoGP.jsx';
 import Article from './screens/Article.jsx';
 import News from './screens/News.jsx';
 import Notices from './screens/Notices.jsx';
-import { RiderDetail, RidersList } from './screens/Riders.jsx';
+import { RiderDetail, RidersList, Standings } from './screens/Riders.jsx';
 import Porra from './screens/Porra.jsx';
 import Vote from './screens/Vote.jsx';
 import { init, now, refresh, useStore } from './store.js';
@@ -50,7 +50,7 @@ function Ready() {
     screen = <Porra tab={b === 'gp' ? 'gp' : b === 'estadisticas' ? 'estadisticas' : 'general'} />;
   } else if (a === 'motogp') {
     tab = 'motogp';
-    screen = b === 'calendario' ? <Calendar /> : b === 'pilotos' ? <RidersList /> : b === 'piloto' ? <RiderDetail key={c} id={c} /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
+    screen = b === 'calendario' ? <Calendar /> : b === 'pilotos' ? <RidersList /> : b === 'mundial' ? <Standings /> : b === 'piloto' ? <RiderDetail key={c} id={c} /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
   } else if (a === 'horario') {
     tab = cameFrom() === 'motogp' ? 'motogp' : '';
     screen = <FullSchedule eventId={b} />;
