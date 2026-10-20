@@ -774,9 +774,7 @@ svg { flex: none; display: block; }
 /* Tiempo del fin de semana en el circuito */
 .wx { margin-top: 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .wx-day { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: var(--bg); border: 1px solid var(--line); min-width: 0; color: var(--text); }
-.wx-day.race { border-color: #4A1A15; box-shadow: inset 0 -2px 0 var(--red); }
 .wx-d { flex: none; width: 14px; font-family: var(--title); font-weight: 800; font-size: 17px; color: var(--text2); }
-.wx-day.race .wx-d { color: var(--text); }
 .wx-ic { flex: none; width: 28px; height: 25px; }
 .wx-v { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
 .wx-t { font-family: var(--display); font-weight: 700; font-size: 13px; white-space: nowrap; }

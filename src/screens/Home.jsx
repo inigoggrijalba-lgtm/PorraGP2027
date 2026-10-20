@@ -453,7 +453,7 @@ export default function Home() {
         <div className="muted">
           {event.circuit} · {dateRange(event.date_start, event.date_end)}
         </div>
-        <Weather days={boot.weather && boot.weather[event.id]} raceDate={event.date_end} />
+        <Weather days={boot.weather && boot.weather[event.id]} />
         {open ? <OpenState event={event} /> : soon ? <SoonState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>
       <PushHint />

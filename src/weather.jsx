@@ -70,7 +70,7 @@ function kind(code) {
 const LETTER = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
 const NAME = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
-export function Weather({ days, raceDate }) {
+export function Weather({ days }) {
   if (!days || !days.length) return null;
   const list = days.slice(-3);
   return (
@@ -78,9 +78,8 @@ export function Weather({ days, raceDate }) {
       {list.map((w) => {
         const wd = new Date(`${w.date}T12:00:00Z`).getUTCDay();
         const [icon, label] = kind(w.code);
-        const race = w.date === raceDate;
         return (
-          <div key={w.date} className={`wx-day ${race ? 'race' : ''}`} aria-label={`${NAME[wd]}: ${label}, de ${w.tmin} a ${w.tmax} grados, ${w.rain ?? 0} % de lluvia`}>
+          <div key={w.date} className="wx-day" aria-label={`${NAME[wd]}: ${label}, de ${w.tmin} a ${w.tmax} grados, ${w.rain ?? 0} % de lluvia`}>
             <span className="wx-d" aria-hidden="true">
               {LETTER[wd]}
             </span>
