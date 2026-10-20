@@ -173,6 +173,17 @@ y lo devuelve como bloques `{t: p|h|q|li|img}`. **No se guarda en la base de dat
 recuerda unos minutos en memoria. Si no se puede extraer (`ok: false`), la app ofrece abrirla en
 la web del medio.
 
+## Tiempo en el circuito
+
+`porra.circuit_coords` guarda las coordenadas de cada circuito por las siglas del GP (`AUS`, `SPA`…).
+Cada 15 minutos `pg_cron` ejecuta `porra.weather_sync()`: para los GP que empiezan en 7 días o menos
+(y hasta el día después de acabar) pide a Open-Meteo, con `pg_net`, la previsión diaria del viernes al
+domingo en hora local del circuito (tipo de cielo, máxima, mínima y % de lluvia) y la guarda en
+`porra.weather`; cada GP se refresca cada 3 horas. `get_bootstrap` la devuelve en `weather`
+(`{id del GP: [días]}`). Open-Meteo es gratis para uso no comercial y no pide clave; se cita en Más.
+Si un GP nuevo no tiene coordenadas, simplemente no sale el tiempo: hay que añadir sus siglas a
+`porra.circuit_coords`.
+
 ## Datos de partida (temporada 2026)
 
 - 13 jugadores, 22 pilotos y 22 grandes premios.

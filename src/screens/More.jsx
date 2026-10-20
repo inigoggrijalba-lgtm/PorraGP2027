@@ -67,6 +67,9 @@ export function More() {
             );
           })}
         </div>
+        <p className="small muted" style={{ padding: '18px 20px 0', fontSize: 12 }}>
+          Datos de carreras: MotoGP. Previsión del tiempo: Open-Meteo.com (CC BY 4.0).
+        </p>
       </main>
     </>
   );

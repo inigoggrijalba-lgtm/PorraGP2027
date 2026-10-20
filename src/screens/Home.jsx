@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { championOf, nextOpening, openText, sessionsOf } from '../data.js';
 import { ScheduleShare } from './MotoGP.jsx';
 import { canOfferPush } from '../push.js';
+import { Weather } from '../weather.jsx';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
@@ -452,6 +453,7 @@ export default function Home() {
         <div className="muted">
           {event.circuit} · {dateRange(event.date_start, event.date_end)}
         </div>
+        <Weather days={boot.weather && boot.weather[event.id]} raceDate={event.date_end} />
         {open ? <OpenState event={event} /> : soon ? <SoonState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>
       <PushHint />
