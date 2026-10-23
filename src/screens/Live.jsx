@@ -5,8 +5,9 @@ import { fullName, isRace } from '../results.js';
 import { loadLive } from '../store.js';
 import { Offline, TopBar } from '../ui.jsx';
 
-// Estados de MotoGP: N sin empezar, I en pista, S detenida (bandera roja, lluvia…), F terminada.
-const STATUS = { N: 'Sin empezar', I: 'En pista', S: 'Detenida', R: 'Bandera roja', F: 'Terminada', C: 'Cancelada' };
+// Estados de MotoGP: N sin empezar, I en pista, S detenida (bandera roja, lluvia…), F y C terminada
+// (C es "closed": es lo que deja el feed al acabar la sesión, no una cancelación).
+const STATUS = { N: 'Sin empezar', I: 'En pista', S: 'Detenida', R: 'Bandera roja', F: 'Terminada', C: 'Terminada' };
 // Bandera para el cuadro de estado. MotoGP no da amarillas ni otras banderas por pista, solo el estado de la sesión.
 const FLAG = {
   N: { kind: 'grey', text: 'Sesión sin empezar' },
@@ -14,7 +15,7 @@ const FLAG = {
   S: { kind: 'red', text: 'Bandera roja · sesión detenida' },
   R: { kind: 'red', text: 'Bandera roja · sesión detenida' },
   F: { kind: 'chequered', text: 'Bandera a cuadros · terminada' },
-  C: { kind: 'grey', text: 'Sesión cancelada' },
+  C: { kind: 'chequered', text: 'Bandera a cuadros · terminada' },
 };
 const running = (st) => !['N', 'F', 'C'].includes(st);
 const cap = (s) => String(s || '').toLowerCase().replace(/(^|[\s-])\p{L}/gu, (m) => m.toUpperCase());
