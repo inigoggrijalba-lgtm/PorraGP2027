@@ -5,7 +5,8 @@ import { fullName, isRace } from '../results.js';
 import { loadLive } from '../store.js';
 import { Offline, TopBar } from '../ui.jsx';
 
-const STATUS = { N: 'Sin empezar', F: 'Terminada', I: 'En pista', S: 'Detenida', R: 'Bandera roja', C: 'Cancelada' };
+// N: sin empezar · S: en marcha (así lo marca MotoGP) · F: terminada.
+const STATUS = { N: 'Sin empezar', S: 'En pista', I: 'En pista', F: 'Terminada', R: 'Bandera roja', C: 'Cancelada' };
 const cap = (s) => String(s || '').toLowerCase().replace(/(^|[\s-])\p{L}/gu, (m) => m.toUpperCase());
 const secs = (v) => {
   const n = Number(v);
@@ -68,7 +69,7 @@ export default function Live() {
               <div className="small muted">
                 {STATUS[live.status] || live.status}
                 {race && live.laps ? ` · ${live.laps} vueltas` : ''}
-                {!race && live.status === 'I' && secs(live.remaining) ? ` · Quedan ${secs(live.remaining)}` : ''}
+                {!race && !['N', 'F', 'C'].includes(live.status) && secs(live.remaining) ? ` · Quedan ${secs(live.remaining)}` : ''}
               </div>
             </div>
             <div style={{ padding: '0 20px' }}>
