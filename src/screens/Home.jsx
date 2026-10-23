@@ -4,6 +4,7 @@ import { championOf, nextOpening, openText, sessionsOf } from '../data.js';
 import { ScheduleShare } from './MotoGP.jsx';
 import { canOfferPush } from '../push.js';
 import { Weather } from '../weather.jsx';
+import { achievementsOf, NewBadges } from '../achievements.jsx';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
@@ -412,7 +413,8 @@ function MiniStandings() {
 }
 
 export default function Home() {
-  const { boot, d, eventData, standings } = useData();
+  const { boot, d, eventData, standings, active } = useData();
+  const achievements = achievementsOf(boot, d, standings);
   const voting = d.events.get(boot.voting_event_id) || null;
   const event = d.events.get(boot.current_event_id) || voting;
   const champ = championOf(d, standings, boot.season);
@@ -456,6 +458,8 @@ export default function Home() {
         <div className="muted">
           {event.circuit} · {dateRange(event.date_start, event.date_end)}
         </div>
+        {/* Logros del último GP, hasta que empieza el siguiente fin de semana. */}
+        {d.lastFinished && now() < Date.parse(`${event.date_start}T00:00:00Z`) && achievements.get(active) ? <NewBadges got={achievements.get(active)} event={d.lastFinished} /> : null}
         <Weather days={boot.weather && boot.weather[event.id]} />
         {open ? <OpenState event={event} /> : soon ? <SoonState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>

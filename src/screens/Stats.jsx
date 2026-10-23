@@ -1,4 +1,5 @@
 // Porra › Estadísticas: la temporada de un jugador frente al resto, GP a GP.
+import { achievementsOf, BadgeGrid } from '../achievements.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { ordinal } from '../data.js';
 import { now } from '../store.js';
@@ -341,6 +342,8 @@ export default function Stats() {
           <span>{rider ? `${rider.short_name}${score ? ` · Sprint ${score.sprint_points ?? 0} · Carrera ${score.race_points ?? 0}` : ''}` : 'Sin voto'}</span>
         </div>
       </section>
+
+      <BadgeGrid mine={mine} name={me.name} got={achievementsOf(boot, d, standings).get(me.id)} />
 
       <section className="sec">
         <div className="sec-head" style={{ marginBottom: 10 }}>
