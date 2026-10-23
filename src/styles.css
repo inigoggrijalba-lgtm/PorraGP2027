@@ -823,4 +823,25 @@ svg { flex: none; display: block; }
 .lv-time b { font-weight: 700; font-size: 15px; }
 .lv-time small { font-weight: 500; font-size: 11px; color: var(--text2); }
 .lv-pit { flex: none; font-size: 10px; }
-@media (prefers-reduced-motion: reduce) { .lv-dot { animation: none; } }
+.lv-flag { margin: 0 20px 12px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--card, rgba(255, 255, 255, 0.04)); border: 1px solid var(--line); border-left-width: 5px; }
+.lv-flag.green { border-left-color: var(--green); }
+.lv-flag.red { border-left-color: var(--red); }
+.lv-flag.grey { border-left-color: var(--text3); }
+.lv-flag.chequered { border-left-color: var(--text); }
+.lv-flag-icon { flex: none; width: 30px; height: 22px; border-radius: 3px; background: var(--text3); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25); }
+.lv-flag.green .lv-flag-icon { background: var(--green); }
+.lv-flag.red .lv-flag-icon { background: var(--red); animation: lvflag 1.2s ease-in-out infinite; }
+.lv-flag.chequered .lv-flag-icon { background-color: #fff; background-image: conic-gradient(#111 25%, #fff 0 50%, #111 0 75%, #fff 0); background-size: 10px 10px; }
+@keyframes lvflag { 50% { opacity: 0.45; } }
+.lv-flag-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.lv-flag-text b { font-family: var(--cond); font-weight: 700; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; }
+.lv-flag-text small { font-size: 12px; color: var(--text2); }
+.lv-clock { flex: none; display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1; }
+.lv-clock small { font-family: var(--cond); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); }
+.lv-clock b { font-family: var(--display); font-variant-numeric: tabular-nums; font-weight: 700; font-size: 20px; }
+.lv-row { position: relative; background: var(--bg); will-change: transform; }
+.lv-row.lv-up { animation: lvup 2.2s ease-out; }
+.lv-row.lv-down { animation: lvdown 2.2s ease-out; }
+@keyframes lvup { 0%, 30% { box-shadow: inset 3px 0 0 var(--green); background: rgba(53, 208, 127, 0.12); } 100% { box-shadow: inset 3px 0 0 transparent; background: var(--bg); } }
+@keyframes lvdown { 0%, 30% { box-shadow: inset 3px 0 0 var(--red); background: rgba(225, 6, 0, 0.1); } 100% { box-shadow: inset 3px 0 0 transparent; background: var(--bg); } }
+@media (prefers-reduced-motion: reduce) { .lv-dot, .lv-flag.red .lv-flag-icon, .lv-row.lv-up, .lv-row.lv-down { animation: none; } }
