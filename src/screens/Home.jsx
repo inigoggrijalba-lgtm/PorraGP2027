@@ -5,7 +5,7 @@ import { ScheduleShare } from './MotoGP.jsx';
 import { canOfferPush } from '../push.js';
 import { Weather } from '../weather.jsx';
 import { achievementsOf, NewBadges } from '../achievements.jsx';
-import { now, refresh } from '../store.js';
+import { liveActive, loadLive, now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
 import { ChampionCard, ChampionPopup, Icon, riderColors, Offline, Photo, PickCard, SheetContext, useChampionPopup, useData, useNow } from '../ui.jsx';
@@ -112,6 +112,42 @@ function OpenState({ event }) {
         </button>
       ) : null}
     </>
+  );
+}
+
+// Punto rojo junto al circuito cuando hay una sesión en pista (de cualquier categoría): lleva al directo.
+// Solo se pregunta durante el fin de semana del GP, cada minuto.
+function LiveDot({ event, current }) {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const from = Date.parse(`${event.date_start}T00:00:00Z`) - 36 * 3600e3;
+    const to = Date.parse(`${event.date_end}T23:59:59Z`) + 36 * 3600e3;
+    let alive = true;
+    let timer = null;
+    const tick = async () => {
+      const t = now();
+      if (t >= from && t <= to && document.visibilityState === 'visible') {
+        try {
+          const live = await loadLive();
+          if (alive) setOn(liveActive(live, event));
+        } catch {
+          // sin directo: no se enseña el punto
+        }
+      }
+      if (alive) timer = setTimeout(tick, 60000);
+    };
+    tick();
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [event.id]);
+  if (!on && !current) return null;
+  return (
+    <a className="lv-link" href="#/directo" aria-label="Hay una sesión en pista: ver los tiempos en directo">
+      <span className="lv-dot" aria-hidden="true" />
+      <span>Directo</span>
+    </a>
   );
 }
 
@@ -457,6 +493,7 @@ export default function Home() {
         <h1 className={`hero-name ${event.name.length > 10 ? 'long' : ''}`}>{event.name}</h1>
         <div className="muted">
           {event.circuit} · {dateRange(event.date_start, event.date_end)}
+          <LiveDot event={event} current={(eventData[event.id]?.sessions || []).some((x) => x.status === 'CURRENT')} />
         </div>
         {/* Logros del último GP, hasta que empieza el siguiente fin de semana. */}
         {d.lastFinished && now() < Date.parse(`${event.date_start}T00:00:00Z`) && achievements.get(active) ? <NewBadges got={achievements.get(active)} event={d.lastFinished} /> : null}

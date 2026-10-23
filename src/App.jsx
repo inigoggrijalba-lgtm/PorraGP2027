@@ -7,6 +7,7 @@ import Admin from './screens/Admin.jsx';
 import { Install, More, Players, Rules } from './screens/More.jsx';
 import { Calendar, FullSchedule, Results } from './screens/MotoGP.jsx';
 import Article from './screens/Article.jsx';
+import Live from './screens/Live.jsx';
 import News from './screens/News.jsx';
 import Notices from './screens/Notices.jsx';
 import { RiderDetail, RidersList, Standings } from './screens/Riders.jsx';
@@ -51,6 +52,8 @@ function Ready() {
   } else if (a === 'motogp') {
     tab = 'motogp';
     screen = b === 'calendario' ? <Calendar /> : b === 'pilotos' ? <RidersList /> : b === 'mundial' ? <Standings /> : b === 'piloto' ? <RiderDetail key={c} id={c} /> : <Results key={b === 'r' ? c : 'auto'} eventId={b === 'r' ? c : null} />;
+  } else if (a === 'directo') {
+    screen = <Live />;
   } else if (a === 'horario') {
     tab = cameFrom() === 'motogp' ? 'motogp' : '';
     screen = <FullSchedule eventId={b} />;

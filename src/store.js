@@ -170,6 +170,18 @@ export const loadRiders = () => cached('riders', () => call('get_gp_riders'));
 export const loadRider = (id) => cached(`rider|${id}`, () => call('get_gp_rider', { p_rider: id }));
 // Titulares de los medios.
 export const loadNews = () => cached('news', () => call('get_news'));
+// Tiempos en directo de la sesión en pista (cualquier categoría). El servidor los guarda unos segundos.
+export async function loadLive() {
+  for (let i = 0; i < 8; i += 1) {
+    const res = await call('live_timing');
+    if (res && res.state === 'hit') return res.data;
+    if (res && res.state === 'error') throw new ApiError('DIRECTO_FALLO');
+    await wait(600);
+  }
+  throw new ApiError('DIRECTO_FALLO');
+}
+// Hay sesión en pista del GP indicado (ni sin empezar ni terminada).
+export const liveActive = (live, event) => !!live && !!event && live.event === event.short_name && !!live.status && !['N', 'F', 'C'].includes(live.status);
 // Una noticia en modo lectura: el servidor descarga la página y devuelve solo el texto y las fotos.
 // No se guarda en ningún sitio; aquí se recuerda mientras la app siga abierta.
 export const loadArticle = (id) => cached(`art|${id}`, () => fn('read-article', { token, id }));
