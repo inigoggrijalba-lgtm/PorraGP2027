@@ -5,8 +5,8 @@ import { fullName, isRace } from '../results.js';
 import { loadLive } from '../store.js';
 import { Offline, TopBar } from '../ui.jsx';
 
-// N: sin empezar · S: en marcha (así lo marca MotoGP) · F: terminada.
-const STATUS = { N: 'Sin empezar', S: 'En pista', I: 'En pista', F: 'Terminada', R: 'Bandera roja', C: 'Cancelada' };
+// Estados de MotoGP: N sin empezar, I en pista, S detenida (bandera roja, lluvia…), F terminada.
+const STATUS = { N: 'Sin empezar', I: 'En pista', S: 'Detenida', R: 'Bandera roja', F: 'Terminada', C: 'Cancelada' };
 const cap = (s) => String(s || '').toLowerCase().replace(/(^|[\s-])\p{L}/gu, (m) => m.toUpperCase());
 const secs = (v) => {
   const n = Number(v);
