@@ -85,9 +85,12 @@ export default function Live() {
         [{ transform: `translateY(${before - top}px)` }, { transform: 'translateY(0)' }],
         { duration: 900, easing: 'cubic-bezier(.2,.8,.2,1)' },
       );
-      el.classList.remove('lv-up', 'lv-down');
-      void el.offsetWidth;
-      el.classList.add(up ? 'lv-up' : 'lv-down');
+      // Solo se resalta (en verde) quien sube.
+      el.classList.remove('lv-up');
+      if (up) {
+        void el.offsetWidth;
+        el.classList.add('lv-up');
+      }
     }
     tops.current = next;
   }, [state.data]);

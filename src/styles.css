@@ -840,8 +840,6 @@ svg { flex: none; display: block; }
 .lv-clock small { font-family: var(--cond); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); }
 .lv-clock b { font-family: var(--display); font-variant-numeric: tabular-nums; font-weight: 700; font-size: 20px; }
 .lv-row { position: relative; background: var(--bg); will-change: transform; }
-.lv-row.lv-up { animation: lvup 2.2s ease-out; }
-.lv-row.lv-down { animation: lvdown 2.2s ease-out; }
-@keyframes lvup { 0%, 30% { box-shadow: inset 3px 0 0 var(--green); background: rgba(53, 208, 127, 0.12); } 100% { box-shadow: inset 3px 0 0 transparent; background: var(--bg); } }
-@keyframes lvdown { 0%, 30% { box-shadow: inset 3px 0 0 var(--red); background: rgba(225, 6, 0, 0.1); } 100% { box-shadow: inset 3px 0 0 transparent; background: var(--bg); } }
-@media (prefers-reduced-motion: reduce) { .lv-dot, .lv-flag.red .lv-flag-icon, .lv-row.lv-up, .lv-row.lv-down { animation: none; } }
+.lv-row.lv-up { animation: lvup 3.5s ease-out; }
+@keyframes lvup { 0%, 45% { box-shadow: inset 3px 0 0 var(--green); background: rgba(53, 208, 127, 0.12); } 100% { box-shadow: inset 3px 0 0 transparent; background: var(--bg); } }
+@media (prefers-reduced-motion: reduce) { .lv-dot, .lv-flag.red .lv-flag-icon, .lv-row.lv-up { animation: none; } }
