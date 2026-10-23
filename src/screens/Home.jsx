@@ -7,7 +7,7 @@ import { Weather } from '../weather.jsx';
 import { now, refresh } from '../store.js';
 import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
-import { ChampionCard, ChampionPopup, Icon, Offline, Photo, PickCard, SheetContext, useChampionPopup, useData, useNow } from '../ui.jsx';
+import { ChampionCard, ChampionPopup, Icon, riderColors, Offline, Photo, PickCard, SheetContext, useChampionPopup, useData, useNow } from '../ui.jsx';
 
 const HOME_NAMES = { FP1: 'Libres 1', PR: 'Práctica', FP2: 'Libres 2', Q1: 'Clasificación', SPR: 'Sprint', WUP: 'Warm up', RAC: 'Carrera' };
 
@@ -261,6 +261,7 @@ function Votes({ event, open }) {
     if (rider) voted.push({ p, rider, score: d.scoreOf(p.id, event.id) });
     else pending.push(p);
   }
+  const byTime = [...voted].sort((a, b) => String(d.voteOf(a.p.id, event.id)?.updated_at || '').localeCompare(String(d.voteOf(b.p.id, event.id)?.updated_at || '')));
   voted.sort((a, b) => (b.p.id === active) - (a.p.id === active) || a.p.name.localeCompare(b.p.name, 'es'));
   return (
     <section className="sec">
@@ -270,10 +271,12 @@ function Votes({ event, open }) {
           Han votado <span className="num" style={{ color: 'var(--text)' }}>{voted.length}</span> de {players.length}
         </div>
       </div>
+      {/* Una barrita por jugador: las de quien ya ha votado, por orden de voto y con el color del equipo de su piloto. */}
       <div className="bars" aria-hidden="true">
-        {players.map((p, i) => (
-          <i key={p.id} className={i < voted.length ? 'on' : ''} />
-        ))}
+        {players.map((p, i) => {
+          const v = byTime[i];
+          return <i key={p.id} className={v ? 'on' : ''} style={v ? { background: riderColors(v.rider)[0] } : undefined} />;
+        })}
       </div>
       <div className="vgrid">
         {voted.map(({ p, rider, score }) => (
