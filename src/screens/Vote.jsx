@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { messageFor } from '../api.js';
 import { MAX_USES } from '../config.js';
 import { nextOpening, openText } from '../data.js';
+import { QuickCard } from '../quickcard.jsx';
 import { now, setActive, vote } from '../store.js';
 import { teamShort } from '../teams.js';
 import { dayMid, hm } from '../time.js';
@@ -144,6 +145,7 @@ function Picker({ event, current }) {
               {!rider ? '' : same ? 'Es tu voto actual' : left === 0 ? 'Será tu último uso de este piloto' : left === 1 ? 'Te quedará 1 uso de este piloto' : `Te quedarán ${left} usos de este piloto`}
             </div>
           </div>
+          {rider ? <QuickCard event={event} rider={rider} /> : null}
           {error ? (
             <p className="err-text" role="alert">
               {error}
