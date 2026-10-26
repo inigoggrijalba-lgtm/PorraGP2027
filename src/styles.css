@@ -869,3 +869,7 @@ svg { flex: none; display: block; }
 .fq-mini span { color: var(--text3); font-family: var(--cond); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 11px; }
 .fq-mini b { font-weight: 700; white-space: nowrap; }
 .fq-mini .up { margin-left: auto; color: var(--text2); display: flex; }
+
+/* Tablas de la porra: filas alternas negro / gris oscuro para seguir mejor cada línea */
+.table .trow:nth-child(odd):not(.mine) { background: #141416; }
+.table .trow.mine { box-shadow: inset 3px 0 0 var(--red); }
