@@ -361,6 +361,7 @@ export function FullSchedule({ eventId }) {
   const motogp = sessionsOf(data, event, 'MotoGP');
   const votingHere = boot.voting_event_id === event.id;
   let lastDay = '';
+  let row = 0;
   return (
     <>
       <TopBar title="Horario" back={back} who={false} />
@@ -402,12 +403,13 @@ export function FullSchedule({ eventId }) {
               const key = dayKey(s.starts_at);
               const first = key !== lastDay;
               lastDay = key;
+              row = first ? 0 : row + 1; // filas alternas dentro de cada día
               const gp = s.category === 'MotoGP';
               const past = Date.parse(s.starts_at) < t;
               return (
                 <div key={s.id}>
                   {first ? <div className="day-head">{dayLong(s.starts_at)}</div> : null}
-                  <div className={`frow ${gp ? 'gp' : ''} ${past ? 'past' : ''}`}>
+                  <div className={`frow ${gp ? 'gp' : ''} ${past ? 'past' : ''} ${row % 2 ? 'alt' : ''}`}>
                     <div className="time">{hm(s.starts_at)}</div>
                     <div className="cat">{s.category}</div>
                     <div className="what">{titleName(s.code)}</div>

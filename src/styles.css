@@ -873,3 +873,11 @@ svg { flex: none; display: block; }
 /* Tablas de la porra: filas alternas negro / gris oscuro para seguir mejor cada línea */
 .table .trow:nth-child(odd):not(.mine) { background: #141416; }
 .table .trow.mine { box-shadow: inset 3px 0 0 var(--red); }
+
+/* Todas las listas de la app: filas alternas negro / gris oscuro.
+   La fila se ensancha 8 px a cada lado (y se compensa por dentro) para que el gris no quede pegado al texto. */
+.srow, .lrow:not(.mine), .cal, .rrow, .hrow, .wrow, .lv-row { margin-left: -8px; margin-right: -8px; padding-left: 8px; padding-right: 8px; }
+.srow:nth-child(even), .lrow:not(.mine):nth-child(even), .cal:nth-child(even), .rrow:nth-child(even), .hrow:nth-child(even), .wrow:nth-child(even), .lv-row:nth-child(even) { background: #141416; }
+.lrow.mine { box-shadow: inset 3px 0 0 var(--red); }
+.frow { margin-left: -8px; margin-right: -8px; padding-left: 8px; padding-right: 8px; }
+.frow.alt { background: #141416; }
