@@ -740,7 +740,11 @@ function Access() {
 function Panel() {
   const { boot, d } = useData();
   const events = boot.events;
-  const start = d.events.get(boot.current_event_id) || d.events.get(boot.voting_event_id) || d.lastFinished || events[0];
+  // Hasta 2 días después de una carrera se abre en ese GP (es el que puede necesitar sincronizar o
+  // corregir puntos); si no, en el GP en curso o el que se vota.
+  const t = now();
+  const justRaced = [...events].reverse().find((e) => e.race_at && Date.parse(e.race_at) < t && t - Date.parse(e.race_at) < 48 * 3600e3);
+  const start = justRaced || d.events.get(boot.current_event_id) || d.events.get(boot.voting_event_id) || d.lastFinished || events[0];
   const [index, setIndex] = useState(() => Math.max(0, events.findIndex((e) => e.id === start?.id)));
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState(null);
