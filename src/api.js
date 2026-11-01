@@ -73,6 +73,7 @@ const MESSAGES = {
   JUGADOR_NO_VALIDO: 'Ese jugador no está disponible.',
   PILOTO_NO_VALIDO: 'Ese piloto no se puede votar.',
   GP_NO_VALIDO: 'Ese Gran Premio no existe.',
+  GP_YA_TERMINADO: 'Ese Gran Premio ya se corrió: no se puede cancelar.',
   CONTRASENA_INCORRECTA: 'Contraseña incorrecta.',
   NO_ADMIN: 'La sesión de administrador ha caducado. Vuelve a entrar.',
   NOMBRE_VACIO: 'Escribe un nombre.',

@@ -317,11 +317,12 @@ export function Calendar() {
         <div className="menu" style={{ paddingTop: 4 }}>
           {boot.events.map((e) => {
             const done = e.status === 'finished';
+            const off = e.status === 'cancelled';
             const isNow = e.id === currentId;
             // Con el fin de semana empezado ya hay resultados; antes, solo horario.
             const started = done || Date.parse(`${e.date_start}T00:00:00Z`) <= t;
             return (
-              <a key={e.id} className={`cal ${done ? 'is-done' : ''} ${isNow ? 'is-now' : ''}`} href={started ? `#/motogp/r/${e.id}` : `#/horario/${e.id}`}>
+              <a key={e.id} className={`cal ${done ? 'is-done' : ''} ${off ? 'is-off' : ''} ${isNow ? 'is-now' : ''}`} href={started ? `#/motogp/r/${e.id}` : `#/horario/${e.id}`}>
                 <span className="rnd">{String(e.round).padStart(2, '0')}</span>
                 <span className="txt">
                   <b>{e.name}</b>
@@ -329,7 +330,7 @@ export function Calendar() {
                     {e.circuit} · {dateRange(e.date_start, e.date_end)}
                   </small>
                 </span>
-                {isNow ? <span className="tag red">Próximo</span> : done ? <span className="small">Resultados</span> : <span className="small muted">Horario</span>}
+                {off ? <span className="tag quiet">Cancelado</span> : isNow ? <span className="tag red">Próximo</span> : done ? <span className="small">Resultados</span> : <span className="small muted">Horario</span>}
                 <span className="muted">
                   <Icon name="next" />
                 </span>
@@ -370,7 +371,7 @@ export function FullSchedule({ eventId }) {
         <div className="page-head" style={{ gap: 12 }}>
           <div>
             <div className="label">
-              Ronda {event.round} de {d.rounds} · Hora peninsular
+              Ronda {event.round} de {d.events.size} · Hora peninsular
             </div>
             <h1 className="h1" style={{ marginTop: 2 }}>
               GP de {event.name}
@@ -430,5 +431,5 @@ export function FullSchedule({ eventId }) {
 export function ScheduleShare({ event, sessions, onClose }) {
   const { boot, d } = useData();
   const voteOpen = boot.voting_event_id === event.id && Date.parse(event.close_at) > now();
-  return <ShareSheet title={`Horario · GP de ${event.name}`} name={`horario-${event.short_name}.png`} make={() => scheduleImage({ event, sessions, rounds: d.rounds, voteOpen })} onClose={onClose} />;
+  return <ShareSheet title={`Horario · GP de ${event.name}`} name={`horario-${event.short_name}.png`} make={() => scheduleImage({ event, sessions, rounds: d.events.size, voteOpen })} onClose={onClose} />;
 }

@@ -76,7 +76,28 @@ function Voting({ event }) {
 
   const close = Date.parse(event.close_at);
   const finished = event.status === 'finished';
-  const open = !finished && close > t;
+  const cancelled = event.status === 'cancelled';
+  const open = !finished && !cancelled && close > t;
+  const [sureCancel, setSureCancel] = useState(false);
+  useEffect(() => setSureCancel(false), [event.id]);
+  const cancelGp = (on) =>
+    run(() => adminDo('admin_cancel_event', { p_event: event.id, p_cancel: on }, event.id), on ? 'GP cancelado: no se vota ni puntúa' : 'GP reactivado');
+  if (cancelled) {
+    return (
+      <section className="adm-state">
+        <div className="strong" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16 }}>
+          <span className="led" />
+          <span>Gran Premio cancelado</span>
+        </div>
+        <div className="muted" style={{ fontSize: 14 }}>
+          No se vota ni puntúa, los votos que hubiera no gastan usos y la temporada no lo cuenta.
+        </div>
+        <button className="btn wide" style={{ height: 44 }} disabled={busy} onClick={() => cancelGp(false)}>
+          Reactivar GP
+        </button>
+      </section>
+    );
+  }
   // Cierre puesto a mano: no coincide con la Sprint, o hay cierre firme sin que MotoGP haya dado la hora.
   const manual = event.sprint_at ? close !== Date.parse(event.sprint_at) : !event.close_provisional;
   const setClose = (iso, msg) => run(() => adminDo('admin_set_close', { p_event: event.id, p_close: iso }), msg);
@@ -160,6 +181,18 @@ function Voting({ event }) {
               Volver al cierre automático
             </button>
           ) : null}
+          <button
+            className={`btn quiet wide ${sureCancel ? 'danger' : ''}`}
+            style={{ height: 44 }}
+            disabled={busy}
+            onClick={() => {
+              if (!sureCancel) return setSureCancel(true);
+              setSureCancel(false);
+              return cancelGp(true);
+            }}
+          >
+            {sureCancel ? '¿Seguro? Cancelar este GP' : 'Cancelar GP (no se corre)'}
+          </button>
         </>
       )}
     </section>

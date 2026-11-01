@@ -75,7 +75,7 @@ function General() {
 
 function ByGp() {
   const { boot, d, active } = useData();
-  const shown = boot.events.filter((e) => e.status === 'finished' || e.id === boot.current_event_id || e.id === boot.voting_event_id);
+  const shown = boot.events.filter((e) => e.status === 'finished' || e.status === 'cancelled' && Date.parse(e.date_start) <= now() + 14 * 86400e3 || e.id === boot.current_event_id || e.id === boot.voting_event_id);
   const fallback = d.events.get(boot.current_event_id) || d.lastFinished || shown[shown.length - 1];
   const [sel, setSel] = useState(fallback ? fallback.id : null);
   const strip = useRef(null);
@@ -102,7 +102,7 @@ function ByGp() {
           GP de {event.name}
         </h1>
         <div className="small muted">
-          Ronda {event.round} de {d.rounds} · {event.status === 'finished' ? 'Terminado' : closed ? 'En juego' : 'Votación abierta'}
+          Ronda {event.round} de {d.events.size} · {event.status === 'cancelled' ? 'Cancelado' : event.status === 'finished' ? 'Terminado' : closed ? 'En juego' : 'Votación abierta'}
         </div>
       </div>
       <div className="gp-strip" ref={strip}>
@@ -113,6 +113,11 @@ function ByGp() {
           </button>
         ))}
       </div>
+      {event.status === 'cancelled' ? (
+        <p className="muted" style={{ padding: '16px 20px' }}>
+          Este Gran Premio se canceló: no puntúa para nadie y los votos que hubiera no gastan usos de los pilotos.
+        </p>
+      ) : (
       <div className="table by-gp" style={{ marginTop: 12 }}>
         <div className="thead">
           <div className="c-name">
@@ -150,6 +155,7 @@ function ByGp() {
           </div>
         ))}
       </div>
+      )}
     </>
   );
 }

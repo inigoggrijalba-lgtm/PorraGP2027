@@ -17,13 +17,14 @@ export function indexOf(boot) {
   const scores = new Map();
   for (const s of boot.scores) scores.set(`${s.player_id}|${s.event_id}`, s);
   const finished = boot.events.filter((e) => e.status === 'finished');
+  const cancelled = new Set(boot.events.filter((e) => e.status === 'cancelled').map((e) => e.id));
 
   lastIndex = {
     players,
     riders,
     byApi,
     events,
-    rounds: boot.events.length,
+    rounds: boot.events.filter((e) => e.status !== 'cancelled').length,
     activePlayers: boot.players.filter((p) => p.active),
     votable: sortRiders(boot.riders.filter((r) => r.votable)),
     finishedCount: finished.length,
@@ -32,7 +33,7 @@ export function indexOf(boot) {
     scoreOf: (playerId, eventId) => scores.get(`${playerId}|${eventId}`) || null,
     // Veces que el jugador se ha quedado con ese piloto, sin contar el GP que se está votando.
     usesOf: (playerId, riderId, exceptEventId) =>
-      boot.votes.filter((v) => v.player_id === playerId && v.rider_id === riderId && v.event_id !== exceptEventId).length,
+      boot.votes.filter((v) => v.player_id === playerId && v.rider_id === riderId && v.event_id !== exceptEventId && !cancelled.has(v.event_id)).length,
     spentCount(playerId, exceptEventId) {
       return this.votable.filter((r) => this.usesOf(playerId, r.id, exceptEventId) >= MAX_USES).length;
     },

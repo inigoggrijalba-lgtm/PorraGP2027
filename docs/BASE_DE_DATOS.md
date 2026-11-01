@@ -63,6 +63,14 @@ Respuestas de error: `VOTO_CERRADO`, `PILOTO_AGOTADO`, `CAMBIO_AGOTADO`,
 `AUN_NO_SE_VOTA_ESTE_GP`, `GP_SIN_HORARIO`, `JUGADOR_NO_EN_ESTE_MOVIL`,
 `PILOTO_NO_VALIDO`, `JUGADOR_NO_VALIDO`, `GP_NO_VALIDO`.
 
+## GP cancelado
+
+Desde Administrador, "Cancelar GP" llama a `admin_cancel_event` y deja el GP en `status = 'cancelled'`
+("Reactivar GP" lo devuelve a `scheduled`). Un GP cancelado no se vota (`voting_event` y `cast_vote` solo
+admiten `scheduled`), sus votos no cuentan para los 3 usos de cada piloto, la temporada no lo cuenta y el
+siguiente GP abre su votación el lunes después de la última carrera que sí se corrió (`porra.open_at`).
+La sincronización solo pasa GP de `scheduled` a `finished`, así que no deshace una cancelación.
+
 ## Sincronización con MotoGP
 
 Cada 5 minutos, `pg_cron` llama a la función `sync-motogp`

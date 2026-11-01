@@ -881,3 +881,6 @@ svg { flex: none; display: block; }
 .lrow.mine { box-shadow: inset 3px 0 0 var(--red); }
 .frow { margin-left: -8px; margin-right: -8px; padding-left: 8px; padding-right: 8px; }
 .frow.alt { background: #141416; }
+.cal.is-off { color: var(--text3); }
+.cal.is-off .txt b { text-decoration: line-through; }
+.cal.is-off .rnd, .cal.is-off .txt small { color: var(--text3); }

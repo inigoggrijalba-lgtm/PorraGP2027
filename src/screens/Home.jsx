@@ -488,7 +488,7 @@ export default function Home() {
       <Offline />
       <section className="hero">
         <div className="label">
-          Ronda {event.round} de {d.rounds} · {open || soon ? 'Próximo Gran Premio' : 'Gran Premio en juego'}
+          Ronda {event.round} de {d.events.size} · {open || soon ? 'Próximo Gran Premio' : 'Gran Premio en juego'}
         </div>
         <h1 className={`hero-name ${event.name.length > 10 ? 'long' : ''}`}>{event.name}</h1>
         <div className="muted">

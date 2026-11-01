@@ -71,7 +71,7 @@ function Picker({ event, current }) {
         <div className="page-head">
           <div>
             <div className="label">
-              Ronda {event.round} de {d.rounds}
+              Ronda {event.round} de {d.events.size}
             </div>
             <h1 className="h1" style={{ marginTop: 2 }}>
               GP de {event.name}
