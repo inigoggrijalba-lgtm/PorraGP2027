@@ -44,7 +44,7 @@ function Body({ blocks }) {
   return <div className="art-body">{out}</div>;
 }
 
-// Compartir la noticia (por WhatsApp, por ejemplo): titular y enlace a la web del medio.
+// Compartir la noticia (por WhatsApp, por ejemplo): titular y enlace a esta misma noticia dentro de la app.
 // Sin menú de compartir en el móvil, se abre WhatsApp directamente.
 function ShareNews({ title, url }) {
   const share = async () => {
@@ -147,7 +147,7 @@ export default function Article({ id }) {
             </div>
           )}
 
-          {url && state.status === 'ready' ? <ShareNews title={(spanish && data.title) || (item && item.title)} url={url} /> : null}
+          {url && state.status === 'ready' ? <ShareNews title={(spanish && data.title) || (item && item.title)} url={`${window.location.origin}${window.location.pathname}#/mas/noticias/${id}`} /> : null}
           {url ? (
             <div className="art-foot">
               <span className="small muted">Fuente: {source}</span>
