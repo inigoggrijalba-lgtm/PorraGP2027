@@ -10,6 +10,12 @@ import { teamShort } from '../teams.js';
 import { countdown, dateRange, dayKey, dayMid, dayMidCap, dayShort, hm } from '../time.js';
 import { ChampionCard, ChampionPopup, Icon, riderColors, Offline, Photo, PickCard, SheetContext, useChampionPopup, useData, useNow } from '../ui.jsx';
 
+// Los logros nuevos se enseñan en Inicio hasta el miércoles siguiente a la carrera (hora peninsular).
+const badgesFresh = (e) => {
+  const wed = new Date(Date.parse(`${e.date_end}T12:00:00Z`) + 3 * 86400e3).toISOString().slice(0, 10);
+  return dayKey(now()) <= wed;
+};
+
 const HOME_NAMES = { FP1: 'Libres 1', PR: 'Práctica', FP2: 'Libres 2', Q1: 'Clasificación', SPR: 'Sprint', WUP: 'Warm up', RAC: 'Carrera' };
 
 function Countdown({ event }) {
@@ -496,7 +502,7 @@ export default function Home() {
           <LiveDot event={event} current={(eventData[event.id]?.sessions || []).some((x) => x.status === 'CURRENT')} />
         </div>
         {/* Logros del último GP, hasta que empieza el siguiente fin de semana. */}
-        {d.lastFinished && now() < Date.parse(`${event.date_start}T00:00:00Z`) && achievements.get(active) ? <NewBadges got={achievements.get(active)} event={d.lastFinished} /> : null}
+        {d.lastFinished && badgesFresh(d.lastFinished) && achievements.get(active) ? <NewBadges got={achievements.get(active)} event={d.lastFinished} /> : null}
         <Weather days={boot.weather && boot.weather[event.id]} />
         {open ? <OpenState event={event} /> : soon ? <SoonState event={event} /> : <ClosedState event={event} sessions={sessions} voting={voting} />}
       </section>

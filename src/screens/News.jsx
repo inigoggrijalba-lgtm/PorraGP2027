@@ -25,9 +25,20 @@ export function readPref() {
 }
 
 function Picture({ item, w, h, eager }) {
-  const [failed, setFailed] = useState(false);
-  if (!item.image || failed) return <span className="nph">{item.source}</span>;
-  return <img src={picture(item.image, w, h)} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} />;
+  // 0: foto ya recortada por el redimensionador; 1: la original del medio (algunos, como GPOne, no se dejan redimensionar); 2: sin foto.
+  const [step, setStep] = useState(0);
+  if (!item.image || step > 1) return <span className="nph">{item.source}</span>;
+  return (
+    <img
+      key={step}
+      src={step ? item.image : picture(item.image, w, h)}
+      alt=""
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      referrerPolicy="no-referrer"
+      onError={() => setStep((n) => n + 1)}
+    />
+  );
 }
 
 // Al volver de leer una noticia se recupera el medio elegido, cuántas se veían y por dónde ibas.

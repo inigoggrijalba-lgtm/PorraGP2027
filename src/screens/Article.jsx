@@ -11,11 +11,12 @@ const LANGS = { en: 'inglés', it: 'italiano', fr: 'francés', de: 'alemán' };
 const wide = (url, w) => `https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&w=${w}&output=webp&q=75`;
 
 function Img({ src, cap, eager }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) return null;
+  // Primero la foto redimensionada; si el medio no se deja (GPOne), la original; si tampoco, nada.
+  const [step, setStep] = useState(0);
+  if (step > 1) return null;
   return (
     <figure className="art-fig">
-      <img src={wide(src, 800)} alt={cap || ''} loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} />
+      <img key={step} src={step ? src : wide(src, 800)} alt={cap || ''} loading={eager ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer" onError={() => setStep((n) => n + 1)} />
       {cap ? <figcaption>{cap}</figcaption> : null}
     </figure>
   );
@@ -43,6 +44,29 @@ function Body({ blocks }) {
   return <div className="art-body">{out}</div>;
 }
 
+// Compartir la noticia (por WhatsApp, por ejemplo): titular y enlace a la web del medio.
+// Sin menú de compartir en el móvil, se abre WhatsApp directamente.
+function ShareNews({ title, url }) {
+  const share = async () => {
+    const text = title ? `${title}\n${url}` : url;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: title || 'Noticia', text: title || '', url });
+      } catch {
+        // el jugador ha cerrado el menú de compartir
+      }
+      return;
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  };
+  return (
+    <button className="cta m art-share" onClick={share}>
+      <Icon name="share" size={16} stroke={2.2} />
+      <span>Compartir noticia</span>
+    </button>
+  );
+}
+
 export default function Article({ id }) {
   const [item, setItem] = useState(() => newsFromList(id));
   const [state, setState] = useState({ status: 'loading', data: null });
@@ -67,10 +91,12 @@ export default function Article({ id }) {
 
   const data = state.data;
   const url = (data && data.url) || (item && item.url) || '';
-  const web = item && item.lang !== 'es' && readPref() ? translatedLink({ ...item, url }) : url;
+  const web = item && item.lang !== 'es' && !(data && data.lang === 'es') && readPref() ? translatedLink({ ...item, url }) : url;
   const source = (item && item.source) || (data && data.source) || 'Noticias';
   const image = (data && data.image) || (item && item.image);
-  const foreign = item && item.lang && item.lang !== 'es';
+  // Si el medio tiene la noticia en castellano, read-article ya trae esa versión (texto y título).
+  const spanish = !!(data && data.lang === 'es');
+  const foreign = item && item.lang && item.lang !== 'es' && !spanish && state.status !== 'loading';
 
   return (
     <>
@@ -86,7 +112,7 @@ export default function Article({ id }) {
                   <span>{ago(item.at, now())}</span>
                   {data && data.byline ? <span>· {data.byline}</span> : null}
                 </span>
-                <h1 className="art-title">{item.title}</h1>
+                <h1 className="art-title">{(spanish && data.title) || item.title}</h1>
                 {foreign ? (
                   <p className="art-note">
                     {item.translated ? 'Título traducido. ' : ''}El texto está en {LANGS[item.lang] || 'otro idioma'}, como lo publica el medio.
@@ -121,6 +147,7 @@ export default function Article({ id }) {
             </div>
           )}
 
+          {url && state.status === 'ready' ? <ShareNews title={(spanish && data.title) || (item && item.title)} url={url} /> : null}
           {url ? (
             <div className="art-foot">
               <span className="small muted">Fuente: {source}</span>

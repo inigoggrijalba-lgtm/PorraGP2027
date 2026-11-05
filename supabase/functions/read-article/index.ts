@@ -155,14 +155,38 @@ function toBlocks(html: string, base: string): Block[] {
   return done;
 }
 
-async function read(item: { id: number; url: string; title: string; image: string | null; source: string }) {
-  const { html, finalUrl } = await download(item.url);
+// Si la noticia tiene versión en castellano en la misma web (GPOne, por ejemplo), se lee esa.
+function spanishOf(html: string, base: string) {
+  const { document } = parseHTML(html);
+  if (/^es\b/i.test(document.documentElement?.getAttribute('lang') || '')) return '';
+  const link = document.querySelector('link[rel="alternate"][hreflang="es"], link[rel="alternate"][hreflang="es-ES"]');
+  const href = absolute(link?.getAttribute('href'), base);
+  try {
+    return href && new URL(href).host === new URL(base).host && href !== base ? href : '';
+  } catch {
+    return '';
+  }
+}
+
+async function read(item: { id: number; url: string; title: string; image: string | null; source: string; lang?: string }) {
+  let { html, finalUrl } = await download(item.url);
+  let spanish = false;
+  const es = item.lang && item.lang !== 'es' ? spanishOf(html, finalUrl) : '';
+  if (es) {
+    try {
+      ({ html, finalUrl } = await download(es));
+      spanish = true;
+    } catch {
+      // Si la versión en castellano falla, se queda la original.
+    }
+  }
   const { document } = parseHTML(html);
   // Fuera lo que nunca es parte de la noticia antes de buscar el texto.
   for (const el of Array.from(document.querySelectorAll('script, style, noscript, iframe, form, nav, footer, aside, [aria-hidden="true"], [class*="cookie"], [id*="cookie"], [class*="newsletter"], [class*="related"], [class*="advert"], [class*="ad-slot"], [class*="social"], [class*="share"]'))) {
     el.remove();
   }
   const meta = (sel: string) => document.querySelector(sel)?.getAttribute('content') || '';
+  const esTitle = spanish ? clean(meta('meta[property="og:title"]') || document.querySelector('h1')?.textContent).replace(/\s*\|\s*GPOne\s*$/i, '') : '';
   const art = new Readability(document as unknown as Document, { charThreshold: 300, keepClasses: false }).parse();
   if (!art || !art.content) throw new Error('SIN_TEXTO');
   let blocks = toBlocks(art.content, finalUrl);
@@ -171,7 +195,7 @@ async function read(item: { id: number; url: string; title: string; image: strin
   const norm = (s: string) => s.toLowerCase().replace(/\W+/g, '');
   const heroKey = hero ? hero.split('?')[0] : '';
   blocks = blocks.filter((b, i) => !(b.t === 'img' && i < 3 && heroKey && b.src!.split('?')[0] === heroKey));
-  blocks = blocks.filter((b) => !(b.t === 'h' && [art.title, item.title].some((t) => t && norm(b.text!) === norm(t))));
+  blocks = blocks.filter((b) => !(b.t === 'h' && [art.title, item.title, esTitle].some((t) => t && norm(b.text!) === norm(t))));
   const words = blocks.filter((b) => b.t !== 'img').reduce((n, b) => n + b.text!.split(/\s+/).length, 0);
   if (words < 60) throw new Error('POCO_TEXTO');
   return {
@@ -179,6 +203,7 @@ async function read(item: { id: number; url: string; title: string; image: strin
     id: item.id,
     url: finalUrl,
     source: item.source,
+    ...(spanish ? { lang: 'es', title: esTitle || clean(art.title) } : {}),
     byline: clean(art.byline).slice(0, 120) || null,
     image: hero,
     words,

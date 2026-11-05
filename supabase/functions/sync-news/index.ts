@@ -17,7 +17,8 @@ const FEEDS: Feed[] = [
   { source: "Motorsport.com", url: "https://es.motorsport.com/rss/motogp/news/", lang: "es" },
   { source: "Motosan", url: "https://www.motosan.es/feed/", lang: "es", keep: (it) => TOPIC.test(it.url) || it.categories.some((c) => /^moto(gp|2|3)$/i.test(c)) },
   { source: "Crash.net", url: "https://www.crash.net/rss/motogp", lang: "en", keep: (it) => TOPIC.test(it.url) },
-  { source: "GPOne", url: "https://www.gpone.com/en/article-feed.xml", lang: "en", keep: (it) => TOPIC.test(it.url) },
+  // GPOne publica también en castellano: se lee su canal en español (antes, el inglés).
+  { source: "GPOne", url: "https://www.gpone.com/es/article-feed.xml", lang: "es", keep: (it) => TOPIC.test(it.url) },
   { source: "The Race", url: "https://www.the-race.com/category/motogp/feed/", lang: "en" },
   // Motociclismo solo tiene un canal general (15 noticias): se queda con las de la categoría MotoGP.
   { source: "Motociclismo", url: "https://www.motociclismo.es/rss.xml", lang: "es", keep: (it) => it.categories.some((c) => /^moto(gp|2|3)$/i.test(c)) || /\/mundial-motogp\//i.test(it.url) },
