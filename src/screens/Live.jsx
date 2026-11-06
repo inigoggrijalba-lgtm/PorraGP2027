@@ -65,6 +65,29 @@ export default function Live() {
     };
   }, []);
 
+  // Mientras se mira el directo, la pantalla no se apaga. El móvil suelta el bloqueo al salir de la
+  // app, así que se vuelve a pedir al volver.
+  useEffect(() => {
+    if (!('wakeLock' in navigator)) return undefined;
+    let lock = null;
+    let alive = true;
+    const ask = async () => {
+      if (!alive || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+      try {
+        lock = await navigator.wakeLock.request('screen');
+      } catch {
+        // batería baja o el navegador no lo deja: la pantalla se apaga como siempre
+      }
+    };
+    document.addEventListener('visibilitychange', ask);
+    ask();
+    return () => {
+      alive = false;
+      document.removeEventListener('visibilitychange', ask);
+      if (lock) lock.release().catch(() => null);
+    };
+  }, []);
+
   // Animación al cambiar de posición: se guarda dónde estaba cada tarjeta y, tras pintar la nueva
   // tabla, se la desplaza desde la posición vieja hasta la nueva.
   const listRef = useRef(null);
