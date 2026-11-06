@@ -489,7 +489,7 @@ export function ShareSheet({ title, name, make, onClose }) {
   );
 }
 
-// Tarjeta del campeón al terminar la temporada, con el botón para compartir su imagen.
+// Tarjeta del campeón (en cuanto es matemático), con el botón para compartir su imagen.
 export function ChampionCard({ champ }) {
   const [sharing, setSharing] = useState(false);
   return (
@@ -513,7 +513,7 @@ export function ChampionCard({ champ }) {
   );
 }
 
-// Al abrir la app con la temporada terminada sale el campeón a pantalla completa, hasta que se cierra.
+// Al abrir la app cuando ya hay campeón (matemático o con la temporada terminada) sale a pantalla completa, hasta que se cierra.
 const seenKey = (season) => `porragp.champSeen.${season}`;
 export function useChampionPopup(champ) {
   const [open, setOpen] = useState(() => {
@@ -541,7 +541,7 @@ export function ChampionPopup({ champ, onClose }) {
     <div className="champ-pop" role="dialog" aria-modal="true" aria-label={`Campeón ${champ.season}`}>
       <div className="sheet-kerb" style={{ margin: 0 }} />
       <div className="champ-pop-body">
-        <div className="label">Temporada {champ.season} terminada</div>
+        <div className="label">{champ.left ? `Campeón matemático · ${champ.left === 1 ? 'queda 1 GP' : `quedan ${champ.left} GP`}` : `Temporada ${champ.season} terminada`}</div>
         <div className="champ-pop-title">CAMPEÓN</div>
         <svg className="champ-cup" viewBox="0 0 120 140" fill="currentColor" aria-hidden="true">
         <path d="M30 8h60v10h22c0 26-10 40-28 44-4 10-11 17-19 20v18h18v12H37v-12h18V82c-8-3-15-10-19-20C18 58 8 44 8 18h22zm0 22H20c2 14 7 21 13 24-2-7-3-15-3-24zm60 0c0 9-1 17-3 24 6-3 11-10 13-24zM30 124h64v12H30z" />

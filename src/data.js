@@ -86,6 +86,7 @@ export function championOf(d, standings, season) {
   return {
     season,
     rounds: d.rounds,
+    left,
     players: list.length,
     name: champ.name,
     total: champ.total,
