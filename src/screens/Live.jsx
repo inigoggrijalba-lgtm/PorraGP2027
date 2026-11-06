@@ -57,7 +57,7 @@ function RaceRow({ r, i, leadLaps, fastest }) {
   const best = time(r.best);
   const lastMs = ms(r.last);
   const bestMs = ms(r.best);
-  const tone = lastMs && lastMs === fastest ? 'purple' : lastMs && lastMs === bestMs ? 'pb' : '';
+  const tone = lastMs && lastMs === fastest ? 'fast' : lastMs && lastMs === bestMs ? 'pb' : '';
   const behind = leadLaps - (r.lap || 0);
   const laps = !(r.pos > 0) ? `${r.lap || 0} ${r.lap === 1 ? 'vuelta' : 'vueltas'}` : behind >= 1 ? `a ${behind} ${behind === 1 ? 'vuelta' : 'vueltas'}` : '';
   return (
@@ -72,7 +72,7 @@ function RaceRow({ r, i, leadLaps, fastest }) {
           {best ? (
             <>
               {' · '}
-              <em className={bestMs && bestMs === fastest ? 'purple' : ''}>mejor {best}</em>
+              <em className={bestMs && bestMs === fastest ? 'fast' : ''}>mejor {best}</em>
             </>
           ) : null}
         </small>
@@ -179,7 +179,7 @@ export default function Live() {
   const live = state.data;
   const race = live && isRace(live.session);
   const rows = live ? live.riders.filter((r) => r.pos > 0).concat(live.riders.filter((r) => !(r.pos > 0))) : [];
-  // Carrera: vueltas del líder y vuelta rápida (la mejor de todos) para marcarla en morado.
+  // Carrera: vueltas del líder y vuelta rápida (la mejor de todos) para marcarla en rojo.
   const leadLaps = race ? Math.max(0, ...rows.filter((r) => r.pos > 0).map((r) => r.lap || 0)) : 0;
   const fastest = race ? rows.map((r) => ms(r.best)).filter((v) => v > 0).reduce((a, b) => Math.min(a, b), Infinity) : 0;
   return (
@@ -234,7 +234,7 @@ export default function Live() {
                 );
               })}
               <p className="small muted" style={{ padding: '12px 0 0' }}>
-                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: última vuelta (en verde si es su mejor; en morado, la vuelta rápida de la carrera); debajo, diferencia con el 1.º.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
+                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: última vuelta (en naranja si es su mejor; en rojo, la vuelta rápida de la carrera); debajo, diferencia con el 1.º.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
               </p>
             </div>
           </>
