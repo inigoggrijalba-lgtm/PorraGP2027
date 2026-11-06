@@ -28,6 +28,64 @@ const secs = (v) => {
 const time = (v) => (!v || Number(v) === 0 ? '' : String(v));
 const gap = (v) => (!v || Number(v) === 0 ? '' : `+${v}`);
 
+// "1'53.412" o "1:53.412" -> milisegundos, para comparar vueltas.
+function ms(v) {
+  const m = /^(\d+)['′:](\d{1,2})\.(\d{1,3})$/.exec(String(v || '').trim());
+  if (!m) return 0;
+  return (Number(m[1]) * 60 + Number(m[2])) * 1000 + Number(m[3].padEnd(3, '0'));
+}
+const who = (r) => `${r.name ? `${r.name.charAt(0)}. ` : ''}${cap(r.surname)}`;
+// En carrera: la vuelta en la que va el líder (las completadas + 1) o, al acabar, el total.
+function lapText(live, done) {
+  if (!running(live.status)) return `${live.laps} vueltas`;
+  if (!done) return `Salida · ${live.laps} vueltas`;
+  return `Vuelta ${Math.min(done + 1, live.laps)} de ${live.laps}`;
+}
+
+function Num({ r }) {
+  return (
+    <span className="plate rp" style={{ background: `#${r.color || '2B2B2F'}`, color: `#${r.ink || 'F5F4F2'}` }}>
+      {r.number}
+    </span>
+  );
+}
+
+// Fila de carrera: lo que destaca es la última vuelta; debajo, la diferencia con el 1.º.
+// La mejor vuelta va discreta junto a la moto, y las vueltas solo si va doblado o se ha retirado.
+function RaceRow({ r, i, leadLaps, fastest }) {
+  const last = time(r.last);
+  const best = time(r.best);
+  const lastMs = ms(r.last);
+  const bestMs = ms(r.best);
+  const tone = lastMs && lastMs === fastest ? 'purple' : lastMs && lastMs === bestMs ? 'pb' : '';
+  const behind = leadLaps - (r.lap || 0);
+  const laps = !(r.pos > 0) ? `${r.lap || 0} ${r.lap === 1 ? 'vuelta' : 'vueltas'}` : behind >= 1 ? `a ${behind} ${behind === 1 ? 'vuelta' : 'vueltas'}` : '';
+  return (
+    <div data-rider={r.number || `x${i}`} className="rrow lv-row">
+      <div className={`rpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos > 0 ? r.pos : '–'}</div>
+      <Num r={r} />
+      <div className="lv-name">
+        <span>{who(r)}</span>
+        <small>
+          {r.bike}
+          {laps ? ` · ${laps}` : ''}
+          {best ? (
+            <>
+              {' · '}
+              <em className={bestMs && bestMs === fastest ? 'purple' : ''}>mejor {best}</em>
+            </>
+          ) : null}
+        </small>
+      </div>
+      {r.pit ? <span className="tag lv-pit">Box</span> : null}
+      <div className="lv-time">
+        <b className={tone}>{last || '–'}</b>
+        {r.pos > 1 && gap(r.gap_first) ? <small>{gap(r.gap_first)}</small> : r.pos === 1 ? <small>Líder</small> : null}
+      </div>
+    </div>
+  );
+}
+
 export default function Live() {
   const [state, setState] = useState({ status: 'loading', data: null, at: 0 });
   // Cuándo cambió por última vez lo que manda MotoGP (su web pública se refresca más o menos una vez por minuto).
@@ -121,6 +179,9 @@ export default function Live() {
   const live = state.data;
   const race = live && isRace(live.session);
   const rows = live ? live.riders.filter((r) => r.pos > 0).concat(live.riders.filter((r) => !(r.pos > 0))) : [];
+  // Carrera: vueltas del líder y vuelta rápida (la mejor de todos) para marcarla en morado.
+  const leadLaps = race ? Math.max(0, ...rows.filter((r) => r.pos > 0).map((r) => r.lap || 0)) : 0;
+  const fastest = race ? rows.map((r) => ms(r.best)).filter((v) => v > 0).reduce((a, b) => Math.min(a, b), Infinity) : 0;
   return (
     <>
       <TopBar title="En directo" back="" who={false} />
@@ -147,22 +208,18 @@ export default function Live() {
                 {fullName(live.session) || live.session_name}
               </h1>
             </div>
-            <LiveStatus live={live} race={race} changed={changed.current} at={state.at} />
+            <LiveStatus live={live} race={race} changed={changed.current} at={state.at} leadLaps={leadLaps} />
             <div style={{ padding: '0 20px' }} ref={listRef}>
               {rows.map((r, i) => {
-                const main = race ? (r.pos === 1 ? time(r.best) || '' : gap(r.gap_first)) : time(r.best);
-                const sub = race ? (r.pos > 1 ? gap(r.gap_prev) : '') : r.pos > 1 ? gap(r.gap_first) : '';
+                if (race) return <RaceRow key={r.number || `x${i}`} r={r} i={i} leadLaps={leadLaps} fastest={fastest} />;
+                const main = time(r.best);
+                const sub = r.pos > 1 ? gap(r.gap_first) : '';
                 return (
                   <div key={r.number || `x${i}`} data-rider={r.number || `x${i}`} className="rrow lv-row">
                     <div className={`rpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos > 0 ? r.pos : '–'}</div>
-                    <span className="plate rp" style={{ background: `#${r.color || '2B2B2F'}`, color: `#${r.ink || 'F5F4F2'}` }}>
-                      {r.number}
-                    </span>
+                    <Num r={r} />
                     <div className="lv-name">
-                      <span>
-                        {r.name ? `${r.name.charAt(0)}. ` : ''}
-                        {cap(r.surname)}
-                      </span>
+                      <span>{who(r)}</span>
                       <small>
                         {r.bike}
                         {r.lap ? ` · ${r.lap} ${r.lap === 1 ? 'vuelta' : 'vueltas'}` : ''}
@@ -177,7 +234,7 @@ export default function Live() {
                 );
               })}
               <p className="small muted" style={{ padding: '12px 0 0' }}>
-                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: diferencia con el 1.º; debajo, con el de delante.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
+                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: última vuelta (en verde si es su mejor; en morado, la vuelta rápida de la carrera); debajo, diferencia con el 1.º.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
               </p>
             </div>
           </>
@@ -187,7 +244,7 @@ export default function Live() {
   );
 }
 
-function LiveStatus({ live, race, changed, at }) {
+function LiveStatus({ live, race, changed, at, leadLaps }) {
   const flag = FLAG[live.status] || { kind: 'grey', text: STATUS[live.status] || live.status };
   const now = Date.now();
   // El reloj sigue corriendo entre un dato y el siguiente, desde lo último que dijo MotoGP.
@@ -199,7 +256,7 @@ function LiveStatus({ live, race, changed, at }) {
       <div className="lv-flag-text">
         <b>{flag.text}</b>
         <small>
-          {race && live.laps ? `${live.laps} vueltas · ` : ''}
+          {race && live.laps ? `${lapText(live, leadLaps)} · ` : ''}
           {at ? (ago < 5 ? 'Datos nuevos ahora' : `Datos de hace ${ago < 60 ? `${ago} s` : `${Math.floor(ago / 60)} min`}`) : ''}
         </small>
       </div>

@@ -824,6 +824,9 @@ svg { flex: none; display: block; }
 .lv-time b { font-weight: 700; font-size: 15px; }
 .lv-time small { font-weight: 500; font-size: 11px; color: var(--text2); }
 .lv-pit { flex: none; font-size: 10px; }
+.lv-time b.pb { color: var(--green); }
+.lv-time b.purple, .lv-name em.purple { color: #B07CFF; }
+.lv-name em { font-style: normal; }
 .lv-flag { margin: 0 20px 12px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--card, rgba(255, 255, 255, 0.04)); border: 1px solid var(--line); border-left-width: 5px; }
 .lv-flag.green { border-left-color: var(--green); }
 .lv-flag.red { border-left-color: var(--red); }
