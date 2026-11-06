@@ -59,7 +59,11 @@ export const ordinal = (n) => `${n}.º`;
 // Fin de temporada: el campeón, el podio y sus datos. Nada hasta que se haya corrido el último GP.
 export function championOf(d, standings, season) {
   const list = standings.filter((s) => s.active);
-  if (!d.rounds || d.finishedCount < d.rounds || list.length < 2) return null;
+  if (!d.rounds || list.length < 2) return null;
+  // Campeón en cuanto es matemático: en cada GP se pueden hacer como mucho 37 puntos, así que si
+  // le saca al 2.º más de 37 por cada GP que queda, ya nadie le alcanza (ni a empatar).
+  const left = Math.max(0, d.rounds - d.finishedCount);
+  if (list[0].total - list[1].total <= 37 * left) return null;
   const finished = [...d.events.values()].filter((e) => e.status === 'finished');
   const champ = list[0];
   // GP ganados: los que cerró con más puntos que nadie (si empata, cuenta para todos los empatados).

@@ -461,7 +461,9 @@ export default function Home() {
   const event = d.events.get(boot.current_event_id) || voting;
   const champ = championOf(d, standings, boot.season);
   const [popup, closePopup] = useChampionPopup(champ);
-  if (champ) {
+  // Temporada acabada: Inicio es solo la tarjeta del campeón. Si ya es campeón matemático pero
+  // aún quedan GP, Inicio sigue igual y la tarjeta va encima de la clasificación.
+  if (champ && d.finishedCount >= d.rounds) {
     return (
       <>
         <Offline />
@@ -492,6 +494,7 @@ export default function Home() {
   return (
     <>
       <Offline />
+      {champ && popup ? <ChampionPopup champ={champ} onClose={closePopup} /> : null}
       <section className="hero">
         <div className="label">
           Ronda {event.round} de {d.events.size} · {open || soon ? 'Próximo Gran Premio' : 'Gran Premio en juego'}
@@ -515,6 +518,7 @@ export default function Home() {
         <Schedule event={event} sessions={sessions} open={open} />
       </section>
       {soon ? null : <Votes event={event} open={open} />}
+      {champ ? <ChampionCard champ={champ} /> : null}
       <MiniStandings />
     </>
   );
