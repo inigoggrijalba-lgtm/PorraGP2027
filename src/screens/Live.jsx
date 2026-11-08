@@ -35,12 +35,46 @@ function ms(v) {
   return (Number(m[1]) * 60 + Number(m[2])) * 1000 + Number(m[3].padEnd(3, '0'));
 }
 const who = (r) => `${r.name ? `${r.name.charAt(0)}. ` : ''}${cap(r.surname)}`;
-// En carrera: la vuelta en la que va el líder (las completadas + 1) o, al acabar, el total.
-function lapText(live, done) {
+// En carrera: la vuelta en la que va el líder (el feed ya da la vuelta en curso) o, al acabar, el total.
+function lapText(live, lap) {
   if (!running(live.status)) return `${live.laps} vueltas`;
-  if (!done) return `Salida · ${live.laps} vueltas`;
-  return `Vuelta ${Math.min(done + 1, live.laps)} de ${live.laps}`;
+  if (!lap) return `Salida · ${live.laps} vueltas`;
+  return `Vuelta ${Math.min(lap, live.laps)} de ${live.laps}`;
 }
+
+// En carrera el feed no da la mejor vuelta de cada piloto (su "lap_time" es el tiempo total de carrera):
+// se calcula aquí con las últimas vueltas que van llegando y se guarda en el móvil por si se sale y se vuelve.
+const BEST_KEY = 'porragp.livebest';
+function loadBest() {
+  try {
+    return JSON.parse(localStorage.getItem(BEST_KEY) || 'null') || { id: '', best: {} };
+  } catch {
+    return { id: '', best: {} };
+  }
+}
+function trackBest(store, live) {
+  const id = [live.category, live.event, live.session, live.date].join('|');
+  if (store.id !== id) {
+    store.id = id;
+    store.best = {};
+  }
+  let changed = false;
+  for (const r of live.riders) {
+    const v = ms(r.last);
+    if (r.number && v > 0 && (!store.best[r.number] || v < store.best[r.number])) {
+      store.best[r.number] = v;
+      changed = true;
+    }
+  }
+  if (changed) {
+    try {
+      localStorage.setItem(BEST_KEY, JSON.stringify(store));
+    } catch {
+      // sin almacenamiento, vale mientras esté abierta
+    }
+  }
+}
+const fmt = (v) => `${Math.floor(v / 60000)}'${String(Math.floor((v % 60000) / 1000)).padStart(2, '0')}.${String(v % 1000).padStart(3, '0')}`;
 
 function Num({ r }) {
   return (
@@ -52,14 +86,13 @@ function Num({ r }) {
 
 // Fila de carrera: lo que destaca es la última vuelta; debajo, la diferencia con el 1.º.
 // La mejor vuelta va discreta junto a la moto, y las vueltas solo si va doblado o se ha retirado.
-function RaceRow({ r, i, leadLaps, fastest }) {
+function RaceRow({ r, i, leadLaps, fastest, bestMs }) {
   const last = time(r.last);
-  const best = time(r.best);
   const lastMs = ms(r.last);
-  const bestMs = ms(r.best);
+  const best = bestMs ? fmt(bestMs) : '';
   const tone = lastMs && lastMs === fastest ? 'fast' : lastMs && lastMs === bestMs ? 'pb' : '';
   const behind = leadLaps - (r.lap || 0);
-  const laps = !(r.pos > 0) ? `${r.lap || 0} ${r.lap === 1 ? 'vuelta' : 'vueltas'}` : behind >= 1 ? `a ${behind} ${behind === 1 ? 'vuelta' : 'vueltas'}` : '';
+  const laps = !(r.pos > 0) ? `fuera en la vuelta ${r.lap || 1}` : behind >= 1 ? `a ${behind} ${behind === 1 ? 'vuelta' : 'vueltas'}` : '';
   return (
     <div data-rider={r.number || `x${i}`} className="rrow lv-row">
       <div className={`rpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos > 0 ? r.pos : '–'}</div>
@@ -88,6 +121,8 @@ function RaceRow({ r, i, leadLaps, fastest }) {
 
 export default function Live() {
   const [state, setState] = useState({ status: 'loading', data: null, at: 0 });
+  const bests = useRef(null);
+  if (!bests.current) bests.current = loadBest();
   // Cuándo cambió por última vez lo que manda MotoGP (su web pública se refresca más o menos una vez por minuto).
   const changed = useRef({ sig: '', at: 0, remaining: 0 });
   const [, setNow] = useState(0);
@@ -181,7 +216,9 @@ export default function Live() {
   const rows = live ? live.riders.filter((r) => r.pos > 0).concat(live.riders.filter((r) => !(r.pos > 0))) : [];
   // Carrera: vueltas del líder y vuelta rápida (la mejor de todos) para marcarla en rojo.
   const leadLaps = race ? Math.max(0, ...rows.filter((r) => r.pos > 0).map((r) => r.lap || 0)) : 0;
-  const fastest = race ? rows.map((r) => ms(r.best)).filter((v) => v > 0).reduce((a, b) => Math.min(a, b), Infinity) : 0;
+  if (race) trackBest(bests.current, live);
+  const bestOf = (r) => (race && bests.current.best[r.number]) || 0;
+  const fastest = race ? rows.map(bestOf).filter((v) => v > 0).reduce((a, b) => Math.min(a, b), Infinity) : 0;
   return (
     <>
       <TopBar title="En directo" back="" who={false} />
@@ -211,7 +248,7 @@ export default function Live() {
             <LiveStatus live={live} race={race} changed={changed.current} at={state.at} leadLaps={leadLaps} />
             <div style={{ padding: '0 20px' }} ref={listRef}>
               {rows.map((r, i) => {
-                if (race) return <RaceRow key={r.number || `x${i}`} r={r} i={i} leadLaps={leadLaps} fastest={fastest} />;
+                if (race) return <RaceRow key={r.number || `x${i}`} r={r} i={i} leadLaps={leadLaps} fastest={fastest} bestMs={bestOf(r)} />;
                 const main = time(r.best);
                 const sub = r.pos > 1 ? gap(r.gap_first) : '';
                 return (
