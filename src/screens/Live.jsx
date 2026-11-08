@@ -43,7 +43,7 @@ function lapText(live, lap) {
 }
 
 // En carrera el feed no da la mejor vuelta de cada piloto (su "lap_time" es el tiempo total de carrera):
-// se calcula aquí con las últimas vueltas que van llegando y se guarda en el móvil por si se sale y se vuelve.
+// la calcula el servidor desde la salida (best_laps) y el móvil la completa con las últimas vueltas que le llegan.
 const BEST_KEY = 'porragp.livebest';
 function loadBest() {
   try {
@@ -217,7 +217,12 @@ export default function Live() {
   // Carrera: vueltas del líder y vuelta rápida (la mejor de todos) para marcarla en rojo.
   const leadLaps = race ? Math.max(0, ...rows.filter((r) => r.pos > 0).map((r) => r.lap || 0)) : 0;
   if (race) trackBest(bests.current, live);
-  const bestOf = (r) => (race && bests.current.best[r.number]) || 0;
+  // La del servidor cuenta desde la salida; la del móvil, por si llega antes una vuelta nueva.
+  const bestOf = (r) => {
+    if (!race) return 0;
+    const v = [live.best_laps?.[r.number], bests.current.best[r.number]].filter((x) => x > 0);
+    return v.length ? Math.min(...v) : 0;
+  };
   const fastest = race ? rows.map(bestOf).filter((v) => v > 0).reduce((a, b) => Math.min(a, b), Infinity) : 0;
   return (
     <>
