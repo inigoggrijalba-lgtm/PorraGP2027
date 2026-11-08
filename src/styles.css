@@ -827,6 +827,8 @@ svg { flex: none; display: block; }
 .lv-time b.pb { color: #FF8A1F; }
 .lv-time b.fast, .lv-name em.fast { color: #FF3B30; }
 .lv-name em { font-style: normal; }
+.lv-flagi { font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-size: 13px; vertical-align: 1px; margin-left: 2px; }
+.lv-prev { color: var(--text3); }
 .lv-flag { margin: 0 20px 12px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--card, rgba(255, 255, 255, 0.04)); border: 1px solid var(--line); border-left-width: 5px; }
 .lv-flag.green { border-left-color: var(--green); }
 .lv-flag.red { border-left-color: var(--red); }

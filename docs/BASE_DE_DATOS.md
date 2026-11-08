@@ -208,3 +208,4 @@ El feed del directo no da la mejor vuelta en Sprint ni carrera (`lap_time` es el
 - `porra.live_best` (session_key, number, best_ms): mejor vuelta de cada piloto en la sesión, calculada con `last_lap_time`.
 - `porra.live_best_tick()`: tarea `porra-live-best` cada 30 s; solo hace algo los días de GP (de `date_end - 1` a `date_end + 1`). Borra lo de hace más de 10 días.
 - `public.live_timing` añade `best_laps` ({dorsal: ms}) a los datos en Sprint y carrera.
+- `porra.live_shape` incluye `nation` (SPA, ITA…) para la bandera de cada piloto (027_directo_nacionalidad).

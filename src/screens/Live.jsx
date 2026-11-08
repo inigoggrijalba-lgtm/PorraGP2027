@@ -35,6 +35,25 @@ function ms(v) {
   return (Number(m[1]) * 60 + Number(m[2])) * 1000 + Number(m[3].padEnd(3, '0'));
 }
 const who = (r) => `${r.name ? `${r.name.charAt(0)}. ` : ''}${cap(r.surname)}`;
+
+// Bandera del piloto: MotoGP da el país con tres letras (SPA, ITA…); se pasa al código de dos letras.
+const ISO = {
+  SPA: 'ES', ESP: 'ES', ITA: 'IT', FRA: 'FR', POR: 'PT', GBR: 'GB', GER: 'DE', AUS: 'AU', RSA: 'ZA', JPN: 'JP', THA: 'TH',
+  INA: 'ID', MAL: 'MY', USA: 'US', ARG: 'AR', BRA: 'BR', TUR: 'TR', NED: 'NL', BEL: 'BE', SUI: 'CH', AUT: 'AT', CZE: 'CZ',
+  COL: 'CO', CHN: 'CN', IND: 'IN', PHI: 'PH', VEN: 'VE', CAN: 'CA', FIN: 'FI', SWE: 'SE', DEN: 'DK', IRL: 'IE', MEX: 'MX',
+  CHI: 'CL', URU: 'UY', PER: 'PE', NZL: 'NZ', QAT: 'QA', HUN: 'HU', POL: 'PL', SVK: 'SK', SLO: 'SI', CRO: 'HR', GRE: 'GR',
+  KOR: 'KR', SMR: 'SM', RSM: 'SM', AND: 'AD', MON: 'MC', LUX: 'LU', NOR: 'NO', EST: 'EE', LAT: 'LV', LTU: 'LT', UKR: 'UA',
+};
+function Flag({ code }) {
+  const iso = ISO[String(code || '').toUpperCase()];
+  if (!iso) return null;
+  const emoji = String.fromCodePoint(...[...iso].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+  return (
+    <span className="lv-flagi" role="img" aria-label={code}>
+      {emoji}
+    </span>
+  );
+}
 // En carrera: la vuelta en la que va el líder (el feed ya da la vuelta en curso) o, al acabar, el total.
 function lapText(live, lap) {
   if (!running(live.status)) return `${live.laps} vueltas`;
@@ -98,7 +117,9 @@ function RaceRow({ r, i, leadLaps, fastest, bestMs }) {
       <div className={`rpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos > 0 ? r.pos : '–'}</div>
       <Num r={r} />
       <div className="lv-name">
-        <span>{who(r)}</span>
+        <span>
+                        {who(r)} <Flag code={r.nation} />
+                      </span>
         <small>
           {r.bike}
           {laps ? ` · ${laps}` : ''}
@@ -113,7 +134,14 @@ function RaceRow({ r, i, leadLaps, fastest, bestMs }) {
       {r.pit ? <span className="tag lv-pit">Box</span> : null}
       <div className="lv-time">
         <b className={tone}>{last || '–'}</b>
-        {r.pos > 1 && gap(r.gap_first) ? <small>{gap(r.gap_first)}</small> : r.pos === 1 ? <small>Líder</small> : null}
+        {r.pos > 1 && gap(r.gap_first) ? (
+          <small>
+            {gap(r.gap_first)}
+            {gap(r.gap_prev) ? <span className="lv-prev"> · ↑{r.gap_prev}</span> : null}
+          </small>
+        ) : r.pos === 1 ? (
+          <small>Líder</small>
+        ) : null}
       </div>
     </div>
   );
@@ -261,7 +289,9 @@ export default function Live() {
                     <div className={`rpos ${r.pos === 1 ? 'first' : ''}`}>{r.pos > 0 ? r.pos : '–'}</div>
                     <Num r={r} />
                     <div className="lv-name">
-                      <span>{who(r)}</span>
+                      <span>
+                        {who(r)} <Flag code={r.nation} />
+                      </span>
                       <small>
                         {r.bike}
                         {r.lap ? ` · ${r.lap} ${r.lap === 1 ? 'vuelta' : 'vueltas'}` : ''}
@@ -276,7 +306,7 @@ export default function Live() {
                 );
               })}
               <p className="small muted" style={{ padding: '12px 0 0' }}>
-                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: última vuelta (en naranja si es su mejor; en rojo, la vuelta rápida de la carrera); debajo, diferencia con el 1.º.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
+                MotoGP refresca sus tiempos públicos más o menos una vez por minuto; la app los mira cada 5 segundos. {race ? 'Tiempo: última vuelta (en naranja si es su mejor; en rojo, la vuelta rápida de la carrera); debajo, diferencia con el 1.º y, tras la flecha, con el de delante.' : 'Tiempo: mejor vuelta; debajo, diferencia con el 1.º.'}
               </p>
             </div>
           </>
