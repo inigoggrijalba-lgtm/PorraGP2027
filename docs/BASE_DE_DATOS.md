@@ -209,3 +209,7 @@ El feed del directo no da la mejor vuelta en Sprint ni carrera (`lap_time` es el
 - `porra.live_best_tick()`: tarea `porra-live-best` cada 30 s; solo hace algo los días de GP (de `date_end - 1` a `date_end + 1`). Borra lo de hace más de 10 días.
 - `public.live_timing` añade `best_laps` ({dorsal: ms}) a los datos en Sprint y carrera.
 - `porra.live_shape` incluye `nation` (SPA, ITA…) para la bandera de cada piloto (027_directo_nacionalidad).
+
+## Horarios de las sesiones
+
+`sync-motogp` saca la hora de cada sesión aún no empezada del calendario de la web de MotoGP (`/events?seasonYear=`, campo `broadcasts`), que da la hora local del circuito. De `/results/sessions` se toman el id, el estado, las condiciones y, ya corrida, la hora real. Motivo: en noviembre de 2026 `/results/sessions` tenía Portugal una semana antes de su fecha.

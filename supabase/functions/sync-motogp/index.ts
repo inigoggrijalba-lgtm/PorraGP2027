@@ -268,6 +268,25 @@ Deno.serve(async (req: Request) => {
 
       const wantSessions: Any[] = plan.fetch_sessions ?? [];
       if (wantSessions.length && Object.keys(cats).length) {
+        // Horarios: los mismos que la web de MotoGP (calendario con las emisiones, /events), con la hora
+        // local del circuito y su desfase. El listado de sesiones de resultados a veces lleva fechas
+        // provisionales mal puestas (Portugal 2026 salía una semana antes); de él se sacan el id de cada
+        // sesión, su estado, las condiciones y, ya corrida, su hora real.
+        const SCHED_CAT: Record<string, string> = { MGP: "MotoGP", MT2: "Moto2", MT3: "Moto3" };
+        const sched = new Map<string, string>(); // "QAT|MotoGP|SPR" -> fecha
+        try {
+          const cal: Any[] = await api(`/events?seasonYear=${plan.season}`);
+          for (const ev of cal) {
+            if (/test/i.test(String(ev.name ?? "")) || !ev.shortname) continue;
+            for (const b of ev.broadcasts ?? []) {
+              const cat = SCHED_CAT[b?.category?.acronym ?? ""];
+              if (cat && b.shortname && b.date_start) sched.set(`${ev.shortname}|${cat}|${b.shortname}`, b.date_start);
+            }
+          }
+        } catch (err) {
+          errors.push(`calendario: ${String(err)}`);
+        }
+        const codeOf = (s: Any) => `${s.type}${s.type === "FP" || s.type === "Q" ? s.number ?? "" : ""}`;
         const jobs = wantSessions.flatMap((e) => CATEGORIES.filter((c) => cats[c]).map((c) => ({ e, c })));
         const lists = await pool(jobs, 6, async ({ e, c }) => {
           try {
@@ -278,7 +297,8 @@ Deno.serve(async (req: Request) => {
               api_uuid: s.id,
               type: s.type,
               number: s.number ?? null,
-              date: s.date ?? null,
+              // Mientras no ha empezado, la hora del calendario; después, la real de resultados (puede haber retraso).
+              date: (/^NOT/i.test(String(s.status ?? "")) ? sched.get(`${e.short_name}|${c}|${codeOf(s)}`) : null) ?? s.date ?? null,
               status: s.status ?? null,
               condition: s.condition ?? null,
               files: fileUrls(s.session_files),
